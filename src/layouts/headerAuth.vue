@@ -5,7 +5,7 @@
                 <img :src="logo" width="128px" height="18px" />
             </div>
             <div class="user-section flex justify-start items-center">
-                <div class="space">Alerta Uni</div>
+                <div class="space">Bem Vindo, {{ userNome }}</div>
             </div>
         </div>
     </el-header>
@@ -17,6 +17,10 @@ export default {
     computed: {
         logo () {
             return 'https://portal.ufrrj.br/wp-content/themes/portalufrrj/images/logomarca_ufrrj_cor.png'
+        },
+        userNome() {
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            return user?.usuarioNome ?? '';
         }
     }
 }

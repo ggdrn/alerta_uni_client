@@ -1,12 +1,12 @@
 <template>
-    <div class="page-flexbox-wrappernp">
+   <div class="flex flex-col">
         <header-component />
-        <main class="flex">
-            <side-bar-component />
-            <div class="container container-principal">
-                <router-view />
-            </div>
-        </main>
+            <main class="flexpage-flexbox-wrappernp">
+                <side-bar-component />
+                <div class="content-principal">
+                    <router-view />
+                </div>
+        </main>    
     </div>
 </template>
 
@@ -25,8 +25,10 @@ export default {
 body {
     background: #f5f6f8;
 }
-.container-principal  {
-    padding-left: 190px;
+.content-principal {
+    margin-left: 220px; /* Margem à esquerda para acomodar o menu lateral */
+    padding: 20px;
+    box-sizing: border-box; /* Inclui padding no tamanho total */
 }
 </style>
 <style lang="sass">

@@ -17,7 +17,7 @@ export default {
     computed: {
         logo () {
             return 'https://portal.ufrrj.br/wp-content/themes/portalufrrj/images/logomarca_ufrrj_cor.png'
-        }
+        },
     }
 }
 </script>

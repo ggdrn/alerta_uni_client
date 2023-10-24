@@ -13,6 +13,7 @@
     "axios": "^0.24.0",
     "axios-case-converter": "^0.9.0",
     "core-js": "^3.19.3",
+    "date-fns": "^2.30.0",
     "element-ui": "^2.15.14",
     "epic-spinners": "^1.1.0",
     "export-to-csv": "^0.2.1",

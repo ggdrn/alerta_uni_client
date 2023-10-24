@@ -1,40 +1,37 @@
 <template>
     <div class="menu-lateral">
         <el-menu
-        default-active="2"
-        background-color="#054050"
-        text-color="#fff"
-        class="el-menu-vertical-demo"
-        @open="handleOpen"
-        @close="handleClose">
+            default-active="1-1"
+            background-color="#054050"
+            text-color="#fff"
+            class="el-menu-vertical-demo"
+            @open="handleOpen"
+            @close="handleClose">
         <el-submenu index="1">
             <template slot="title">
-            <i class="el-icon-location"></i>
-            <span>Navigator One</span>
+            <i class="el-icon-document"></i>
+            <span>Registro Ocorrencia</span>
             </template>
-            <el-menu-item-group title="Group One">
-            <el-menu-item index="1-1">item one</el-menu-item>
-            <el-menu-item index="1-2">item one</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="Group Two">
-            <el-menu-item index="1-3">item three</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="1-4">
-            <template slot="title">item four</template>
-            <el-menu-item index="1-4-1">item one</el-menu-item>
-            </el-submenu>
+            <el-menu-item-group title="Opções">
+            <el-menu-item index="1-1">
+                <i class="el-icon-folder-opened"></i> <span> Listagem </span>
+            </el-menu-item>
+            <el-menu-item index="1-2">
+                <i class="el-icon-document-add"></i> <span> Nova Ocorrência </span>
+            </el-menu-item>
+        </el-menu-item-group>
         </el-submenu>
         <el-menu-item index="2">
-            <i class="el-icon-menu"></i>
-            <span>Navigator Two</span>
+            <i class="el-icon-user"></i>
+            <span>Listagem de Vitimas</span>
         </el-menu-item>
-        <el-menu-item index="3" disabled>
-            <i class="el-icon-document"></i>
-            <span>Navigator Three</span>
-        </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="3">
             <i class="el-icon-setting"></i>
-            <span>Navigator Four</span>
+            <span>Configuração do Perfil</span>
+        </el-menu-item>        
+        <el-menu-item index="4">
+            <i class="el-icon-switch-button"></i>
+            <span>Sair</span>
         </el-menu-item>
         </el-menu>
     </div>
@@ -55,7 +52,7 @@
 <style>
 .menu-lateral {
     display: flex;
+  position: fixed;
     height: 100%;
-    position: fixed;
 }
 </style>

@@ -8,7 +8,11 @@ import '@/scss/core.scss';
 //Element UI
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(ElementUI);
+
+import locale from 'element-ui/lib/locale/lang/pt-br';// Importe o pacote de tradução para pt-BR
+
+Vue.use(ElementUI, { locale });
+
 
 Vue.config.productionTip = false
 
