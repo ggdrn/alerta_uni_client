@@ -1,7 +1,7 @@
 <template>
     <footer>
         <div class="flex justify-center items-center mt-10 mb-10">
-            <div class="title">Fintools | Desafio Front-End</div>
+            <div class="title">UFRRJ | Sistemas de Informação | Versão Beta</div>
         </div>
     </footer>
 </template>

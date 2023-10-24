@@ -1,10 +1,13 @@
 import axios from 'axios';
 import applyCaseMiddleware from 'axios-case-converter';
-import { backendBaseURL, coinsUrl } from '@/utils/end-points';
+import { backendBaseURL } from '@/utils/end-points';
 
 // If you enter any token without a header
 export const headerAxios = () => {
-    return {};
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    return {
+        Authorization: user?.token ?? false
+    };
 };
 
 // convert to the default of js Camel Case
@@ -13,13 +16,5 @@ export const configAxios = () =>
         axios.create({
             headers: headerAxios(),
             baseURL: backendBaseURL,
-        })
-    );
-
-export const configCoins = () =>
-    applyCaseMiddleware(
-        axios.create({
-            headers: headerAxios(),
-            baseURL: coinsUrl,
         })
     );

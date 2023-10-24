@@ -35,3 +35,9 @@ export const createUserInList = async (user) => {
     const api = configAxios();
     await api.post(`users/`, user);
 };
+
+export const userLogin = async (email, password) => {
+    const api = configAxios();
+    const { data } = await api.post(`usuario/login/`, { email, password });
+    return data;
+}

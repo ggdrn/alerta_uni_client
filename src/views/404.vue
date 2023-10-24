@@ -1,32 +1,24 @@
 <template>
     <div class="page-flexbox-wrappernp">
         <header-component />
-        <main class="flex">
-            <side-bar-component />
-            <div class="container container-principal">
-                <router-view />
-            </div>
+        <main class="container mx-auto mb-10 sm:px-0 px-5">
+           <h3>Pagina não encontrada</h3>
         </main>
     </div>
 </template>
 
 <script>
-import headerComponent from "./headerAuth.vue"
-import sideBarComponent from "./sideBar.vue"
+import headerComponent from "@/layouts/header.vue"
 export default {
     name: 'Default',
     components: {
         'header-component': headerComponent,
-        'side-bar-component': sideBarComponent,
     },
 };
 </script>
 <style lang="scss" >
 body {
     background: #f5f6f8;
-}
-.container-principal  {
-    padding-left: 190px;
 }
 </style>
 <style lang="sass">

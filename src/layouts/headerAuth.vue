@@ -1,5 +1,5 @@
 <template>
-    <nav class="header-desktop">
+    <el-header class="header-desktop">
         <div class="container mx-auto flex items-center justify-between">
             <div>
                 <img :src="logo" width="128px" height="18px" />
@@ -8,7 +8,7 @@
                 <div class="space">Alerta Uni</div>
             </div>
         </div>
-    </nav>
+    </el-header>
 </template>
 
 <script>
@@ -25,7 +25,6 @@ export default {
 <style lang="scss" scoped>
 .header-desktop {
     background: #fff;
-    margin-bottom: 54px;
 }
 .header-desktop .container {
     height: 54px;
