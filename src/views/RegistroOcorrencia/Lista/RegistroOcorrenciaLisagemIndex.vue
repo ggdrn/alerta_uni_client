@@ -114,9 +114,9 @@ name: "RegistroOcorrenciaLisagemIndex",
             const { format } = require("date-fns");
             return format(new Date(date), "dd/MM/yyyy");
         },
-        detalhesOcorrencia(row) {
-            // Implemente a lógica para exibir detalhes da ocorrência
-            console.log("Detalhes da ocorrência:", row);
+        detalhesOcorrencia({ uid }) {
+          // Implemente a lógica para exibir detalhes da ocorrência
+          this.$router.push({ name: 'RegistroOcorrenciaDetalhes', params: { uid } });
         }
   }
 };

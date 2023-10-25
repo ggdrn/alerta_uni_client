@@ -15,7 +15,12 @@ const router = new Router({
                 {
                     path: '/registro-ocorrencia/listagem',
                     name: 'RegistroOcorrenciaLisagem',
-                    component: () => import(/* webpackChunkName: "Dashboard" */ '@/views/RegistroOcorrencia/Lista/RegistroOcorrenciaLisagemIndex'),
+                    component: () => import('@/views/RegistroOcorrencia/Lista/RegistroOcorrenciaLisagemIndex'),
+                },
+                {
+                    path: '/registro-ocorrencia/detalhes/:uid',
+                    name: 'RegistroOcorrenciaDetalhes',
+                    component: () => import('@/views/RegistroOcorrencia/Detalhes/RegistroOcorrenciaDetalhesIndex'),
                 },
 
             ]

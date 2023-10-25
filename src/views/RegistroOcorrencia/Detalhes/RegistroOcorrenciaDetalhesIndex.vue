@@ -1,129 +1,169 @@
 <template>
-  <div>
-    <!-- Card de filtro -->
-    <el-card class="filter-card">
-      <el-form :model="filterForm" ref="filterForm" inline>
-        <el-form-item label="Protocolo">
-          <el-input v-model="filterForm.protocolo"></el-input>
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="filterForm.status" placeholder="Selecione">
-            <el-option label="Todos" value=""></el-option>
-            <el-option label="Aberta" value="aberta"></el-option>
-            <el-option label="Processando" value="processando"></el-option>
-            <el-option label="Encerrado" value="encerrado"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Data">
-            <el-date-picker
-                v-model="filterForm.data_ocorrencia"
-                type="daterange"
-                range-separator="e"
-                start-placeholder="Inicio"
-                value-format="yyyy-MM-dd"
-                placeholder="Selecione a data"
-                format="dd/MM/yyyy"
-                end-placeholder="Fim">
-            </el-date-picker>
-        </el-form-item>
-        <el-button :loading="loading" @click="getDados" type="success">Filtrar</el-button>
-      </el-form>
-    </el-card>
-
-    <!-- Tabela de dados -->
-    <el-table :lazy="loading" :data="ocorrencias.data" style="width: 100%">
-      <el-table-column prop="protocolo" label="Protocolo"></el-table-column>
-      <el-table-column label="Categoria Ocorrência">
-         <template slot-scope="scope">
-            {{ scope.row.naturezaOcorrencium.categoriaOcorrencium.nome }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Natureza Ocorrência">
-         <template slot-scope="scope">
-            {{ scope.row.naturezaOcorrencium.nome }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="Status"></el-table-column>
-      <el-table-column label="Data da Ocorrência">
-        <template slot-scope="scope">
-            {{ formatarData(scope.row.dataOcorrencia) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Ação">
-        <template slot-scope="scope">
-          <el-button plain round type="success" @click="detalhesOcorrencia(scope.row)">Detalhes</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
+    <div>
+        <el-card class="filter-card">
+            <el-skeleton v-if="loading" animated :rows="20" />
+            <div v-else>
+                <el-page-header @back="goBack" content="Detalhes do Registro da Ocorrência"></el-page-header>
+                
+                    <div class="p-8">
+                    <!-- Informações da Ocorrência -->
+                        <h2 class="text-2xl font-semibold">Informações da Ocorrência</h2>
+                            <div class=" p-4 ">
+                                <h2 class="text-2xl font-semibold">Protocolo: {{ ocorrencia.protocolo }}</h2>
+                                <div class="mb-4">{{ ocorrencia.descricao }}</div>
+                                    <div class="mb-4">
+                                        <strong>Classificação:</strong> {{ ocorrencia.classificacao }}
+                                    </div>
+                                <div class="mb-4">
+                                    <strong>Status:</strong> {{ ocorrencia.status }}
+                                </div>                       
+                                <div class="mb-4">
+                                    <strong>Categoria da Ocorrência:</strong> {{ ocorrencia.naturezaOcorrencium.categoriaOcorrencium.nome }}
+                                </div>                             
+                                <div class="mb-4">
+                                    <strong>Natureza da Ocorrência:</strong> {{ ocorrencia.naturezaOcorrencium.nome }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Data da Ocorrência:</strong> {{ formatarData(ocorrencia.dataOcorrencia) }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Local:</strong> {{ ocorrencia.local }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Coordenadas:</strong> Latitude: {{ ocorrencia.latitude }}, Longitude: {{ ocorrencia.longitude }}
+                                </div>
+                                <div class="mb-4">
+                                    <div id="map" style="height: 400px;z-index: 0;"></div>
+                                </div>
+                            </div>
+                            <el-divider></el-divider>
+                                <!-- Informações da Cadastrais da Vitima -->
+                            <h2 class="text-2xl font-semibold">Informações Cadastrais da Vitima</h2>
+                            <div class="p-4">   
+                            <div class="p-4">
+                                <div class="mb-4">
+                                    <strong>Nome:</strong> {{ ocorrencia.pessoa.nome }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>RG:</strong> {{ ocorrencia.pessoa.rg }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Endereço:</strong> {{ ocorrencia.pessoa.endereco }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Gênero:</strong> {{ ocorrencia.pessoa.genero }}
+                                </div>
+                            </div>
+                            <el-divider></el-divider>
+                            <!-- Informações da Vítima -->
+                            <h2 class="text-2xl font-semibold">Informações da Vítima</h2>
+                            <div class="p-4">
+                                <div class="mb-4">
+                                    <strong>E-mail:</strong> {{ ocorrencia.pessoa.vitima.email }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Data de Nascimento:</strong> {{ formatarData(ocorrencia.pessoa.vitima.dataNascimento) }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Telefone:</strong> {{ ocorrencia.pessoa.vitima.telefone }}
+                                </div>
+                                <div v-show="ocorrencia.pessoa.autor" class="mb-4">
+                                    <strong>Instrumento portado do Autor:</strong> {{ ocorrencia.pessoa.autor.instrumentoPortado }}
+                                </div>
+                            </div>
+                            <el-divider></el-divider>
+                                <!-- Informações do Vínculo com a Universidade -->
+                            <h2 class="text-2xl font-semibold">Informações do Vínculo com a Universidade</h2>
+                            <div class="p-4">
+                                <div class="mb-4">
+                                    <strong>Curso:</strong> {{ ocorrencia.pessoa.vinculoUniversidade.curso }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Departamento:</strong> {{ ocorrencia.pessoa.vinculoUniversidade.departamento }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Matrícula:</strong> {{ ocorrencia.pessoa.vinculoUniversidade.matricula }}
+                                </div>
+                                <div class="mb-4">
+                                    <strong>Tipo:</strong> {{ ocorrencia.pessoa.vinculoUniversidade.vinculoUniversidade.titulo }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-card>
+    </div>
 </template>
 
 <script>
-import {  getOcorrenciasListagem } from "@/services/ocorrencia"
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import markerIcon from '@/assets/marker.png'; // Substitua pelo caminho da sua imagem
+import { getOcorrenciasDetalhes } from "@/services/ocorrencia";
 export default {
-name: "RegistroOcorrenciaLisagemIndex",
-  data() {
-      return {
-        loading: false,
-        filterForm: {
-            protocolo: "",
-            status: "",
-            data_ocorrencia: ""
-        },
-          ocorrencias: {
-            data: [], totalRegistros: 0, paginaAtual: 1
-        }
-    };
+    name: "RegistroOcorrenciaLisagemIndex",
+    data() {
+        return {
+            loading: false,
+            ocorrencia: {
+        
+            },
+        };
     },
-    created() {
-        this.getDados();
-  },
-  computed: {
-
-  },
+    async created() {
+        await this.getDados();
+        this.montarMapa();
+    },
+    computed: {},
     methods: {
+        goBack() {
+            this.$router.push({ name: "RegistroOcorrenciaLisagem" });
+        },
         async getDados() {
             try {
                 this.loading = true;
-                const result = await getOcorrenciasListagem(this.makeParams());
-                this.ocorrencias = result;
+                const { uid } = this.$route.params;
+                const result = await getOcorrenciasDetalhes(uid);
+                this.ocorrencia = result;
             } catch (error) {
+                this.$router.push({ name: "RegistroOcorrenciaLisagem" });
+                 this.$notify({
+                    title: 'Falha ao acessar a Ocorrência',
+                    message: 'Não foi possível vizualizar os detalhes dessa Ocorrência',
+                    type: 'error'
+                });
                 console.error(error);
             } finally {
                 this.loading = false;
             }
         },
-        makeParams() {
-            if (this.filterForm.data_ocorrencia?.length) {
-                const data_inicial = new Date(this.filterForm.data_ocorrencia[0]);
-                const data_final = new Date(this.filterForm.data_ocorrencia[1]);
-                return {
-                    protocolo: this.filterForm.protocolo,
-                    status: this.filterForm.status,
-                    data_ocorrencia: {data_inicial, data_final  }
-                } 
-            } else {
-                 return {
-                    protocolo: this.filterForm.protocolo,
-                    status: this.filterForm.status,
-                } 
-            }
-            
+        montarMapa() {
+            const map = L.map('map').setView([this.ocorrencia.latitude, this.ocorrencia.longitude], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(map);
+
+                const customIcon = L.icon({
+                    iconUrl: markerIcon, // Use a imagem personalizada como ícone
+                    iconSize: [32, 32], // Defina o tamanho do ícone personalizado
+                });
+
+            L.marker([this.ocorrencia.latitude, this.ocorrencia.longitude],{ icon: customIcon })
+            .addTo(map)
+            .bindPopup('Localização relativa da Ocorrência')
+            .openPopup();
         },
-        formatarData(date) {
-            const { format } = require("date-fns");
-            return format(new Date(date), "dd/MM/yyyy");
+       formatarData(data) {
+            const dataObj = new Date(data);
+            return dataObj.toLocaleDateString();
         },
-        detalhesOcorrencia(row) {
-            // Implemente a lógica para exibir detalhes da ocorrência
-            console.log("Detalhes da ocorrência:", row);
-        }
-  }
+    },
 };
 </script>
 
 <style scoped>
 .filter-card {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 </style>

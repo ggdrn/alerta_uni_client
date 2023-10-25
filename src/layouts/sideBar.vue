@@ -1,31 +1,29 @@
 <template>
     <div class="menu-lateral">
         <el-menu
-            default-active="1-1"
+            :default-active="activeRoute"
             background-color="#054050"
             text-color="#fff"
-            class="el-menu-vertical-demo"
-            @open="handleOpen"
-            @close="handleClose">
+            class="el-menu-vertical-demo">
         <el-submenu index="1">
             <template slot="title">
             <i class="el-icon-document"></i>
             <span>Registro Ocorrencia</span>
             </template>
             <el-menu-item-group title="Opções">
-            <el-menu-item index="1-1">
+            <el-menu-item @click="goTo('RegistroOcorrenciaLisagem')" index="RegistroOcorrenciaLisagem">
                 <i class="el-icon-folder-opened"></i> <span> Listagem </span>
             </el-menu-item>
-            <el-menu-item index="1-2">
+            <el-menu-item @click="goTo('RegistroOcorrenciaCriar')" index="RegistroOcorrenciaCriar">
                 <i class="el-icon-document-add"></i> <span> Nova Ocorrência </span>
             </el-menu-item>
         </el-menu-item-group>
         </el-submenu>
-        <el-menu-item index="2">
+        <el-menu-item @click="goTo('ListagemVitimas')" index="ListagemVitimas">
             <i class="el-icon-user"></i>
             <span>Listagem de Vitimas</span>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item @click="goTo('ConfiguracaoPerfil')" index="ConfiguracaoPerfil">
             <i class="el-icon-setting"></i>
             <span>Configuração do Perfil</span>
         </el-menu-item>        
@@ -40,11 +38,18 @@
 <script>
   export default {
     methods: {
-      handleOpen(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      handleClose(key, keyPath) {
-        console.log(key, keyPath);
+      goTo(name) {
+      this.$router.push({ name })
+     }
+  },
+  computed: {
+    activeRoute() {
+      let routeName = this.$route.name;
+      if (routeName === 'RegistroOcorrenciaDetalhes') {
+        // Ainda está na mesma categoria de menu
+        routeName = 'RegistroOcorrenciaLisagem';
+      }
+      return routeName;
       }
     }
   }
