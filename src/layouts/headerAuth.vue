@@ -29,9 +29,18 @@ export default {
 <style lang="scss" scoped>
 .header-desktop {
     background: #fff;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    position: fixed;
+    z-index: 2;
 }
 .header-desktop .container {
-    height: 54px;
+    // height: 60px;
+    // position:fixed;
+    width: 100%;
+    margin-bottom: 54px;
+    // z-index: 99999 !important;
+    background: #fff;
 }
 .user-section {
     font-size: 14px;
