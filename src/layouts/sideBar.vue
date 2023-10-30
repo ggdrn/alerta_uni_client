@@ -5,18 +5,21 @@
             background-color="#054050"
             text-color="#fff"
             class="el-menu-vertical-demo">
-        <el-submenu index="1">
+        <el-submenu index="registroOcorrencia">
             <template slot="title">
-            <i class="el-icon-document"></i>
-            <span>Registro Ocorrencia</span>
+                <i class="el-icon-document"></i>
+                <span>Registro Ocorrencia</span>
             </template>
             <el-menu-item-group title="Opções">
-            <el-menu-item @click="goTo('RegistroOcorrenciaLisagem')" index="RegistroOcorrenciaLisagem">
-                <i class="el-icon-folder-opened"></i> <span> Listagem </span>
-            </el-menu-item>
-            <el-menu-item @click="goTo('RegistroOcorrenciaCriar')" index="RegistroOcorrenciaCriar">
-                <i class="el-icon-document-add"></i> <span> Nova Ocorrência </span>
-            </el-menu-item>
+                <el-menu-item @click="goTo('RegistroOcorrenciaLisagem')" index="RegistroOcorrenciaLisagem">
+                    <i class="el-icon-folder-opened"></i> <span> Listagem </span>
+                </el-menu-item>            
+                <el-menu-item @click="goTo('RegistroOcorrenciaMapas')" index="RegistroOcorrenciaMapas">
+                    <i class="el-icon-map-location"></i> <span> Mapa </span>
+                </el-menu-item>
+                <el-menu-item @click="goTo('RegistroOcorrenciaCriar')" index="RegistroOcorrenciaCriar">
+                    <i class="el-icon-document-add"></i> <span> Nova Ocorrência </span>
+                </el-menu-item>
         </el-menu-item-group>
         </el-submenu>
         <el-menu-item @click="goTo('ListagemVitimas')" index="ListagemVitimas">
@@ -47,7 +50,9 @@
       let routeName = this.$route.name;
       if (routeName === 'RegistroOcorrenciaDetalhes') {
         // Ainda está na mesma categoria de menu
-        routeName = 'RegistroOcorrenciaLisagem';
+        routeName = 'registroOcorrencia';
+      } else if (routeName === "RegistroOcorrenciaAtualizar") {
+        routeName = 'registroOcorrencia'
       }
       return routeName;
       }

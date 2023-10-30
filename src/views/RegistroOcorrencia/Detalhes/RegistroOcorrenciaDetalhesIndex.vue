@@ -4,8 +4,17 @@
             <el-skeleton v-if="loading" animated :rows="20" />
             <div v-else>
                 <el-page-header @back="goBack" content="Detalhes do Registro da Ocorrência"></el-page-header>
-                
+                    
                     <div class="p-8">
+                    <template v-if="user.usuarioTipo === 1 && !disebledBtn">
+                        <h2 class="text-2xl font-semibold">Ações da Ocorrência</h2>
+                        <div class="flex gap-3 mb-5 mt-5">
+                            <el-button :loading="loadingBtn" size="small" type="success" @click="mudarStatus('Processando')">Encaminhar Ocorrência</el-button>
+                            <el-button :loading="loadingBtn" size="small" type="primary" @click="editarOcorrencia()">Editar Ocorrência</el-button>
+                            <el-button :loading="loadingBtn" size="small" type="danger" @click="mudarStatus('Denúncia não confirmada')">Cancelar Ocorrência</el-button>
+                        </div>
+                        <el-divider></el-divider>
+                    </template>
                     <!-- Informações da Ocorrência -->
                         <h2 class="text-2xl font-semibold">Informações da Ocorrência</h2>
                             <div class=" p-4 ">
@@ -99,25 +108,36 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import markerIcon from '@/assets/marker.png'; // Substitua pelo caminho da sua imagem
-import { getOcorrenciasDetalhes } from "@/services/ocorrencia";
+import { getOcorrenciasDetalhes, pacthStatusRegistroOcorrencia } from "@/services/ocorrencia";
 export default {
-    name: "RegistroOcorrenciaLisagemIndex",
+    name: "RegistroOcorrenciaDetalhesIndex",
     data() {
         return {
             loading: false,
             ocorrencia: {
         
             },
+            user : {},
+            loadingBtn :false
         };
     },
     async created() {
         await this.getDados();
         this.montarMapa();
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        this.user = user;
     },
-    computed: {},
+    computed: {
+        disebledBtn() {
+            return this.ocorrencia.status === 'Processando' || this.ocorrencia.status === 'Denúncia não confirmada';
+        }
+    },
     methods: {
         goBack() {
-            this.$router.push({ name: "RegistroOcorrenciaLisagem" });
+            this.$router.back();
+        },
+        editarOcorrencia() {
+            this.$router.push({ name: 'RegistroOcorrenciaAtualizar', params: { uid: this.ocorrencia.uid } }); 
         },
         async getDados() {
             try {
@@ -135,6 +155,27 @@ export default {
                 console.error(error);
             } finally {
                 this.loading = false;
+            }
+        },
+        async mudarStatus(status) {
+            try {
+                this.loadingBtn = true;
+                await pacthStatusRegistroOcorrencia(this.ocorrencia.uid, status);
+                this.$notify({
+                    title: 'Sucesso!',
+                    message: 'Status atualizado com sucesso',
+                    type: 'success'
+                });
+            } catch (error) {
+                console.error(error);
+                this.$notify({
+                    title: 'Falha ao atualizar o status',
+                    message: error?.response?.data?.message || '',
+                    type: 'error'
+                });
+            } finally {
+                this.loadingBtn = false;
+                this.getDados();
             }
         },
         montarMapa() {

@@ -11,7 +11,7 @@
             <el-option label="Todos" value=""></el-option>
             <el-option label="Aberta" value="aberta"></el-option>
             <el-option label="Processando" value="processando"></el-option>
-            <el-option label="Encerrado" value="encerrado"></el-option>
+            <el-option label="Denúncia não confirmada" value="Denúncia não confirmada"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="Data">
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import {  getOcorrenciasListagem } from "@/services/ocorrencia"
+import { getOcorrenciasListagem } from "@/services/ocorrencia";
 export default {
 name: "RegistroOcorrenciaLisagemIndex",
   data() {

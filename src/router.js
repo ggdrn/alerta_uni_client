@@ -18,9 +18,24 @@ const router = new Router({
                     component: () => import('@/views/RegistroOcorrencia/Lista/RegistroOcorrenciaLisagemIndex'),
                 },
                 {
+                    path: '/registro-ocorrencia/criar',
+                    name: 'RegistroOcorrenciaCriar',
+                    component: () => import('@/views/RegistroOcorrencia/Criar/RegistroOcorrenciaCriarIndex'),
+                },
+                {
+                    path: '/registro-ocorrencia/mapa',
+                    name: 'RegistroOcorrenciaMapas',
+                    component: () => import('@/views/RegistroOcorrencia/Mapas/RegistroOcorrenciaMapasIndex'),
+                },
+                {
                     path: '/registro-ocorrencia/detalhes/:uid',
                     name: 'RegistroOcorrenciaDetalhes',
                     component: () => import('@/views/RegistroOcorrencia/Detalhes/RegistroOcorrenciaDetalhesIndex'),
+                },
+                {
+                    path: '/registro-ocorrencia/editar/:uid',
+                    name: 'RegistroOcorrenciaAtualizar',
+                    component: () => import('@/views/RegistroOcorrencia/Criar/RegistroOcorrenciaCriarIndex'),
                 },
 
             ]
