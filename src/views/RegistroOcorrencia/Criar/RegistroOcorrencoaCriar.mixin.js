@@ -1,7 +1,11 @@
-import { getNaturezaOcorrenciaDados, getCategoriaOcorrenciaDados, getTiposVinculosUniversidade, postCriarItemSubtraido, postCriarRegistroOcorrencia, postCriarPessoa, postCriarVinculoUniversidade } from "@/services/ocorrencia";
+import { getOcorrenciasDetalhes, pacthUpdateRegistroOcorrencia, getNaturezaOcorrenciaDados, getCategoriaOcorrenciaDados, getTiposVinculosUniversidade, postCriarItemSubtraido, postCriarRegistroOcorrencia, postCriarPessoa, postCriarVinculoUniversidade } from "@/services/ocorrencia";
+
 export default {
     created() {
         this.getDadosFormulario();
+        if (this.isEditar) {
+            this.getFormularioEditavel();
+        }
     },
     computed: {
         naturezaOptionsFilter() {
@@ -11,9 +15,29 @@ export default {
                 return this.naturezaOptions;
             }
 
+        },
+        isEditar() {
+            return Boolean(this.$route.params.uid);
         }
     },
     methods: {
+        formatDate(date) {
+            date = new Date(date); 
+            const year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+
+            // Adiciona um zero à esquerda se o mês ou dia for menor que 10
+            if (month < 10) {
+                month = `0${month}`;
+            }
+            if (day < 10) {
+                day = `0${day}`;
+            }
+
+            return `${year}-${month}-${day}`;
+        },
+
         camelToSnake(obj) {
             if (Array.isArray(obj)) {
                 return obj.map(item => this.camelToSnake(item));
@@ -44,6 +68,35 @@ export default {
                 ...this.formLocal,
                 ...this.formOcorrencia,
                 pessoa_uid, item_uid
+            }
+        },
+        makeAtualizarOcorrenciaPayload() {
+            delete this.updateOcorrencia.natureza_ocorrencium;
+            return {
+                ...this.updateOcorrencia,
+                ...this.formOcorrencia,
+                ...this.formLocal,
+                data_ocorrencia: this.formatDate(this.updateOcorrencia.data_ocorrencia),
+                item_subtraido: {
+                    ...this.updateOcorrencia.item_subtraido,
+                    objeto: this.objeto,
+                },
+                pessoa: {
+                    ...this.formPessoa,
+                    autor: {
+                        ...this.updateOcorrencia.pessoa.autor,
+                        instrumento_portado: this.instrumento_portado ?? null,
+                    },
+                    vitima: {
+                        ...this.updateOcorrencia.pessoa.vitima,
+                        ...this.formVitima,
+                        data_nascimento: this.formatDate(this.formVitima.data_nascimento)
+                    },
+                    vinculo_universidade: {
+                        ...this.formUniversidade,
+                    }
+                }
+
             }
         },
         addMarker(event) {
@@ -106,6 +159,83 @@ export default {
         nextStep() {
             if (this.active++ > 5) this.active = 0;
         },
+        goBack() {
+            this.$router.back();
+        },
+        async getFormularioEditavel() {
+            try {
+                this.loading = true;
+                const data = await getOcorrenciasDetalhes(this.$route.params.uid);
+                let ocorrencia = this.camelToSnake(data);
+                console.log(ocorrencia);
+                this.updateOcorrencia = ocorrencia
+                this.formOcorrencia = {
+                    descricao: ocorrencia.descricao,
+                    classificacao: ocorrencia.classificacao,
+                    data_ocorrencia: ocorrencia.data_ocorrencia,
+                    natureza_uid: ocorrencia.natureza_uid,
+                    categoria_uid: ocorrencia.natureza_ocorrencium.categoria_ocorrencium.uid,
+                }
+                this.formPessoa = {
+                    nome: ocorrencia.pessoa.nome,
+                    rg: ocorrencia.pessoa.rg,
+                    endereco: ocorrencia.pessoa.endereco,
+                    genero: ocorrencia.pessoa.genero,
+                }
+                this.formVitima = {
+                    email: ocorrencia.pessoa.vitima.email,
+                    data_nascimento: ocorrencia.pessoa.vitima.data_nascimento,
+                    telefone: ocorrencia.pessoa.vitima.telefone,
+                }
+                this.formUniversidade = {
+                    ...ocorrencia.pessoa.vinculo_universidade
+                }
+                this.instrumento_portado = ocorrencia.pessoa.autor.instrumento_portado;
+                this.objeto = ocorrencia.item_subtraido.objeto;
+                this.formLocal = {
+                    local: ocorrencia.local,
+                    latitude: ocorrencia.latitude,
+                    longitude: ocorrencia.longitude,
+                }
+                this.markers = [{
+                    id: this.nextMarkerId++,
+                    latLng: [ocorrencia.latitude, ocorrencia.longitude]
+                }]
+            } catch (error) {
+                this.$notify({
+                    title: 'Falha ao acessar a ocorrência',
+                    message: error?.response?.data?.message || '',
+                    type: 'error'
+                });
+                this.goBack();
+            } finally {
+                //
+                this.loading = false;
+            }
+        },
+        async atualizarOcorrencia() {
+            try {
+                this.loading = true;
+                const payload = this.makeAtualizarOcorrenciaPayload();
+                const { uid } = this.$route.params;
+                await pacthUpdateRegistroOcorrencia(uid, payload);
+                this.$notify({
+                    title: 'Sucesso!',
+                    message: 'Registro atualizado com sucesso',
+                    type: 'success'
+                });
+                this.goBack();
+            } catch (error) {
+                console.error(error)
+                this.$notify({
+                    title: 'Falha ao atualizar a ocorrência',
+                    message: error?.response?.data?.message || '',
+                    type: 'error'
+                });
+            } finally {
+                this.loading = false;
+            }
+        },
         async enivarFormulário() {
             try {
                 this.loading = true;
@@ -119,7 +249,11 @@ export default {
                 this.ocorrenciaResult = result;
                 this.active++
             } catch (error) {
-                alert('Erro ao validar o formulário, revise os dados informados');
+                this.$notify({
+                    title: 'Falha ao criar a ocorrência',
+                    message: error?.response?.data?.message || 'Erro ao validar o formulário, revise os dados informados',
+                    type: 'error'
+                });
                 this.active = 0;
                 console.table(error);
             } finally {

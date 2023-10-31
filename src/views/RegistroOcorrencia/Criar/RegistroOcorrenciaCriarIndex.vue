@@ -1,9 +1,10 @@
 <template>
     <div>
+        <el-page-header v-if="isEditar" @back="goBack" content="Editar um Registro de Ocorrência"></el-page-header>
         <el-card v-loading.fullscreen.lock="loading" element-loading-text="Enviando Dados..."
             element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" class="mt-20">
             <div>
-                <div v-if="active === 0">
+                <div v-if="active === 0 || isEditar">
                     <h2 class="text-2xl font-semibold mb-5">Informações da Vitima</h2>
                     <el-form ref="formPessoa" :model="formPessoa" :rules="formPessoaRules" label-position="top">
                         <div class="grid grid-cols-2 gap-4">
@@ -30,7 +31,7 @@
                         </div>
                     </el-form>
                 </div>
-                <div v-if="active === 1">
+                <div v-if="active === 1 || isEditar">
                     <h2 class="text-2xl font-semibold mb-5">Informações da Vitima</h2>
                     <el-form ref="formVitima" :model="formVitima" :rules="formVitimaRules" label-position="top">
                         <div class="grid grid-cols-2 gap-4">
@@ -55,7 +56,7 @@
                         </div>
                     </el-form>
                 </div>
-                <div v-if="active === 2">
+                <div v-if="active === 2 || isEditar">
                     <h2 class="text-2xl font-semibold mb-5">Informações da Ocorrência</h2>
                     <el-form ref="formOcorrencia" :model="formOcorrencia" :rules="formOcorrenciaRules" label-position="top">
                         <div>
@@ -111,7 +112,7 @@
                         </div>
                     </el-form>
                 </div>
-                <div v-if="active === 3">
+                <div v-if="active === 3 || isEditar">
                     <h2 class="text-2xl font-semibold mb-5">Informações do Vínculo com a Universidade</h2>
                     <el-form ref="formUniversidade" :model="formUniversidade" :rules="formUniversidadeRules"
                         label-position="top">
@@ -143,7 +144,7 @@
                         </div>
                     </el-form>
                 </div>
-                <div class="py-3" v-if="active === 4">
+                <div class="py-3" v-if="active === 4 || isEditar">
                     <h2 class="text-2xl font-semibold mb-5">Informe o Local da Ocorrência</h2>
                     <el-form ref="formLocal" :model="formLocal" :rules="formLocalRules" label-position="top">
                         <el-form-item label="Descreva o local" prop="local">
@@ -188,7 +189,7 @@
                     </div>
                 </div>
             </div>
-            <el-steps v-if="active <= 5" :active="active" finish-status="success">
+            <el-steps v-if="active <= 5 && !isEditar" :active="active" finish-status="success">
                 <el-step title="Passo 1"></el-step>
                 <el-step title="Passo 2"></el-step>
                 <el-step title="Passo 3"></el-step>
@@ -196,9 +197,12 @@
                 <el-step title="Passo 5"></el-step>
             </el-steps>
         </el-card>
-        <div v-if="active <= 5" class="flex justify-between">
+        <div v-if="active <= 5 && !isEditar" class="flex justify-between">
             <el-button style="margin-top: 12px;" @click="back">Voltar passo</el-button>
             <el-button style="margin-top: 12px;" @click="next">Próximo passo</el-button>
+        </div>        
+        <div v-if="isEditar" class="flex justify-end mt-3">
+            <el-button type="success"  icon="el-icon-s-promotion"  @click="atualizarOcorrencia">Salvar Alterações</el-button>
         </div>
     </div>
 </template>
@@ -222,6 +226,7 @@ export default {
         categoriaOptions: [],
         naturezaOptions: [],
         vinculoOptions: [],
+        updateOcorrencia: {},
         formPessoa: {
             nome: '',
             rg: null,

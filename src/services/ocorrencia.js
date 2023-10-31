@@ -54,3 +54,9 @@ export const pacthStatusRegistroOcorrencia = async (uid, status) => {
     const { data } = await api.patch(`registro_ocorrencia/mudar_status/${uid}`, { status });
     return data;
 }
+
+export const pacthUpdateRegistroOcorrencia = async (uid, payload) => {
+    const api = configAxios();
+    const { data } = await api.patch(`registro_ocorrencia/atualizar/${uid}`, payload);
+    return data;
+}
