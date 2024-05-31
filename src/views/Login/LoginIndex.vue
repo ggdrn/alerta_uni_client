@@ -1,24 +1,46 @@
 <template>
-   <div class="bg-gray-100 flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-md w-80">
-        <h1 class="text-2xl font-semibold mb-6">ACESSAR SISTEMA</h1>
-        <el-form ref="loginForm" :model="loginData" :rules="loginRules" label-position="top">
-            <div>
-               <el-form-item label="E-mail" prop="email">
-                    <el-input v-model="loginData.email"></el-input>
+    <div class="bg-gray-100 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-md w-80">
+            <h1 class="text-2xl font-semibold mb-6">
+                ACESSAR SISTEMA
+            </h1>
+            <el-form
+                ref="loginForm"
+                :model="loginData"
+                :rules="loginRules"
+                label-position="top"
+            >
+                <div>
+                    <el-form-item
+                        label="E-mail"
+                        prop="email"
+                    >
+                        <el-input v-model="loginData.email" />
+                    </el-form-item>
+                </div>
+                <div>
+                    <el-form-item
+                        label="Senha"
+                        prop="password"
+                    >
+                        <el-input
+                            v-model="loginData.password"
+                            type="password"
+                        />
+                    </el-form-item>
+                </div>
+                <el-form-item class="mt-12">
+                    <el-button
+                        :loading="loading"
+                        type="success"
+                        @click="login"
+                    >
+                        Entrar
+                    </el-button>
                 </el-form-item>
-            </div>
-            <div>
-                <el-form-item label="Senha" prop="password">
-                     <el-input type="password" v-model="loginData.password"></el-input>
-                </el-form-item>
-            </div>
-            <el-form-item class="mt-12">
-                <el-button :loading="loading" type="success" @click="login">Entrar</el-button>
-            </el-form-item>
-        </el-form>
+            </el-form>
+        </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -27,22 +49,22 @@ export default {
     name: 'Login',
     data() {
         return {
-        loginData: {
-            email: '',
-            password: '',
+            loginData: {
+                email: '',
+                password: '',
             },
-        loading: false,
-        loginRules: {
-            email: [
-            { required: true, message: 'Informe o e-mail', trigger: 'blur' },
-            { type: 'email', message: 'E-mail inválido', trigger: 'blur' },
-            ],
-            password: [
-            { required: true, message: 'Informe a senha', trigger: 'blur' },
-            { min: 8, message: 'A senha deve ter pelo menos 8 caracteres', trigger: 'blur' },
-            { validator: this.validatePassword, trigger: 'blur' },
-            ],
-        },
+            loading: false,
+            loginRules: {
+                email: [
+                    { required: true, message: 'Informe o e-mail', trigger: 'blur' },
+                    { type: 'email', message: 'E-mail inválido', trigger: 'blur' },
+                ],
+                password: [
+                    { required: true, message: 'Informe a senha', trigger: 'blur' },
+                    { min: 8, message: 'A senha deve ter pelo menos 8 caracteres', trigger: 'blur' },
+                    { validator: this.validatePassword, trigger: 'blur' },
+                ],
+            },
         };
     },
     methods: {
@@ -53,33 +75,33 @@ export default {
                     if (valid) {
                         // Executar a lógica de login aqui
                         const usuario = await userLogin(this.loginData.email, this.loginData.password)
-                        .catch(error => {
-                            this.$notify({
-                                title: 'Falha ao acessar o sistema',
-                                message: error?.response?.data?.message || 'Não foi possível fazer login com as crendencias fornecidas',
-                                type: 'error'
+                            .catch(error => {
+                                this.$notify({
+                                    title: 'Falha ao acessar o sistema',
+                                    message: error?.response?.data?.message || 'Não foi possível fazer login com as crendencias fornecidas',
+                                    type: 'error',
+                                });
+                                return false;
                             });
-                            return false;
-                        });
                         if (usuario) {
                             const { message } = usuario;
                             delete usuario.message
                             sessionStorage.setItem("user", JSON.stringify(usuario));
-                             this.$notify({
+                            this.$notify({
                                 title: 'Sucesso',
                                 message,
-                                type: 'success'
-                             });
-                            this.$router.push({name: "RegistroOcorrenciaLisagem"})
+                                type: 'success',
+                            });
+                            this.$router.push({ name: "RegistroOcorrenciaLisagem" })
                         }
-                        
+
                     }
                 });
             } catch (e) {
-                 this.$notify({
+                this.$notify({
                     title: 'Falha ao acessar o sistema',
                     message: 'Não foi possível fazer login com as crendencias fornecidas',
-                    type: 'error'
+                    type: 'error',
                 });
             } finally {
                 this.loading = false;
@@ -94,5 +116,5 @@ export default {
             }
         },
     },
-    };
+};
 </script>

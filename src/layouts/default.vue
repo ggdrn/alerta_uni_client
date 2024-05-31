@@ -1,12 +1,15 @@
 <template>
-   <div class="flex flex-col">
+    <div class="flex flex-col">
         <header-component />
-            <main style="margin-top: 60px;" class="flexpage-flexbox-wrappernp">
-                <side-bar-component />
-                <div class="content-principal">
-                    <router-view />
-                </div>
-        </main>    
+        <main
+            style="margin-top: 60px;"
+            class="flexpage-flexbox-wrappernp"
+        >
+            <side-bar-component />
+            <div class="content-principal">
+                <router-view />
+            </div>
+        </main>
     </div>
 </template>
 

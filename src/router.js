@@ -1,7 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
 
-
 Vue.use(Router);
 const router = new Router({
     mode: "history",
@@ -38,7 +37,7 @@ const router = new Router({
                     component: () => import('@/views/RegistroOcorrencia/Criar/RegistroOcorrenciaCriarIndex'),
                 },
 
-            ]
+            ],
         },
         {
             path: "/login",
@@ -47,16 +46,16 @@ const router = new Router({
                 {
                     path: "/",
                     name: "login",
-                    component: () => import("@/views/Login/LoginIndex")
-                }
-            ]
+                    component: () => import("@/views/Login/LoginIndex"),
+                },
+            ],
         },
         {
             path: "*",
             name: "not-found",
-            component: () => import("@/views/404.vue")
-        }
-    ]
+            component: () => import("@/views/404.vue"),
+        },
+    ],
 });
 
 router.beforeEach(async (to, from, next) => {

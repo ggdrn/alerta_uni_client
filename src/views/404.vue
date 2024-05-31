@@ -2,9 +2,9 @@
     <div class="page-flexbox-wrappernp">
         <header-component />
         <main class="container mx-auto mb-10 sm:px-0 px-5">
-           <div class="flex justify-center">
-             <h1>Pagina não encontrada</h1>
-           </div>
+            <div class="flex justify-center">
+                <h1>Pagina não encontrada</h1>
+            </div>
         </main>
     </div>
 </template>

@@ -2,10 +2,16 @@
     <el-header class="header-desktop">
         <div class="container mx-auto flex items-center justify-between">
             <div>
-                <img :src="logo" width="128px" height="18px" />
+                <img
+                    :src="logo"
+                    width="128px"
+                    height="18px"
+                >
             </div>
             <div class="user-section flex justify-start items-center">
-                <div class="space">Bem Vindo, {{ userNome }}</div>
+                <div class="space">
+                    Bem Vindo, {{ userNome }}
+                </div>
             </div>
         </div>
     </el-header>
@@ -13,16 +19,16 @@
 
 <script>
 export default {
-    name: 'headerComponent',
+    name: 'HeaderComponent',
     computed: {
-        logo () {
+        logo() {
             return 'https://portal.ufrrj.br/wp-content/themes/portalufrrj/images/logomarca_ufrrj_cor.png'
         },
         userNome() {
             const user = JSON.parse(sessionStorage.getItem('user'));
             return user?.usuarioNome ?? '';
-        }
-    }
+        },
+    },
 }
 </script>
 

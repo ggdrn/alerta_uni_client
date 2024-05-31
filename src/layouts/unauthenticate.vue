@@ -15,7 +15,7 @@ export default {
     name: 'Default',
     components: {
         'header-component': headerComponent,
-        'footer-component': footerComponent
+        'footer-component': footerComponent,
     },
 };
 </script>

@@ -6,7 +6,7 @@ import { backendBaseURL } from '@/utils/end-points';
 export const headerAxios = () => {
     const user = JSON.parse(sessionStorage.getItem('user'));
     return {
-        Authorization: user?.token ?? false
+        Authorization: user?.token ?? false,
     };
 };
 

@@ -4,60 +4,76 @@
             :default-active="activeRoute"
             background-color="#054050"
             text-color="#fff"
-            class="el-menu-vertical-demo">
-        <el-submenu index="registroOcorrencia">
-            <template slot="title">
-                <i class="el-icon-document"></i>
-                <span>Registro Ocorrencia</span>
-            </template>
-            <el-menu-item-group title="Opções">
-                <el-menu-item @click="goTo('RegistroOcorrenciaLisagem')" index="RegistroOcorrenciaLisagem">
-                    <i class="el-icon-folder-opened"></i> <span> Listagem </span>
-                </el-menu-item>            
-                <el-menu-item @click="goTo('RegistroOcorrenciaMapas')" index="RegistroOcorrenciaMapas">
-                    <i class="el-icon-map-location"></i> <span> Mapa </span>
-                </el-menu-item>
-                <el-menu-item @click="goTo('RegistroOcorrenciaCriar')" index="RegistroOcorrenciaCriar">
-                    <i class="el-icon-document-add"></i> <span> Nova Ocorrência </span>
-                </el-menu-item>
-        </el-menu-item-group>
-        </el-submenu>
-        <el-menu-item @click="goTo('ListagemVitimas')" index="ListagemVitimas">
-            <i class="el-icon-user"></i>
-            <span>Listagem de Vitimas</span>
-        </el-menu-item>
-        <el-menu-item @click="goTo('ConfiguracaoPerfil')" index="ConfiguracaoPerfil">
-            <i class="el-icon-setting"></i>
-            <span>Configuração do Perfil</span>
-        </el-menu-item>        
-        <el-menu-item index="4">
-            <i class="el-icon-switch-button"></i>
-            <span>Sair</span>
-        </el-menu-item>
+            class="el-menu-vertical-demo"
+        >
+            <el-submenu index="registroOcorrencia">
+                <template slot="title">
+                    <i class="el-icon-document" />
+                    <span>Registro Ocorrencia</span>
+                </template>
+                <el-menu-item-group title="Opções">
+                    <el-menu-item
+                        index="RegistroOcorrenciaLisagem"
+                        @click="goTo('RegistroOcorrenciaLisagem')"
+                    >
+                        <i class="el-icon-folder-opened" /> <span> Listagem </span>
+                    </el-menu-item>
+                    <el-menu-item
+                        index="RegistroOcorrenciaMapas"
+                        @click="goTo('RegistroOcorrenciaMapas')"
+                    >
+                        <i class="el-icon-map-location" /> <span> Mapa </span>
+                    </el-menu-item>
+                    <el-menu-item
+                        index="RegistroOcorrenciaCriar"
+                        @click="goTo('RegistroOcorrenciaCriar')"
+                    >
+                        <i class="el-icon-document-add" /> <span> Nova Ocorrência </span>
+                    </el-menu-item>
+                </el-menu-item-group>
+            </el-submenu>
+            <el-menu-item
+                index="ListagemVitimas"
+                @click="goTo('ListagemVitimas')"
+            >
+                <i class="el-icon-user" />
+                <span>Listagem de Vitimas</span>
+            </el-menu-item>
+            <el-menu-item
+                index="ConfiguracaoPerfil"
+                @click="goTo('ConfiguracaoPerfil')"
+            >
+                <i class="el-icon-setting" />
+                <span>Configuração do Perfil</span>
+            </el-menu-item>
+            <el-menu-item index="4">
+                <i class="el-icon-switch-button" />
+                <span>Sair</span>
+            </el-menu-item>
         </el-menu>
     </div>
 </template>
 
 <script>
-  export default {
+export default {
+    computed: {
+        activeRoute() {
+            let routeName = this.$route.name;
+            if (routeName === 'RegistroOcorrenciaDetalhes') {
+                // Ainda está na mesma categoria de menu
+                routeName = 'registroOcorrencia';
+            } else if (routeName === "RegistroOcorrenciaAtualizar") {
+                routeName = 'registroOcorrencia'
+            }
+            return routeName;
+        },
+    },
     methods: {
-      goTo(name) {
-      this.$router.push({ name })
-     }
-  },
-  computed: {
-    activeRoute() {
-      let routeName = this.$route.name;
-      if (routeName === 'RegistroOcorrenciaDetalhes') {
-        // Ainda está na mesma categoria de menu
-        routeName = 'registroOcorrencia';
-      } else if (routeName === "RegistroOcorrenciaAtualizar") {
-        routeName = 'registroOcorrencia'
-      }
-      return routeName;
-      }
-    }
-  }
+        goTo(name) {
+            this.$router.push({ name })
+        },
+    },
+}
 </script>
 <style>
 .menu-lateral {

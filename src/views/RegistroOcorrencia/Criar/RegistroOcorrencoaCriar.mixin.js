@@ -1,4 +1,12 @@
-import { getOcorrenciasDetalhes, pacthUpdateRegistroOcorrencia, getNaturezaOcorrenciaDados, getCategoriaOcorrenciaDados, getTiposVinculosUniversidade, postCriarItemSubtraido, postCriarRegistroOcorrencia, postCriarPessoa, postCriarVinculoUniversidade } from "@/services/ocorrencia";
+import { getOcorrenciasDetalhes,
+    pacthUpdateRegistroOcorrencia,
+    getNaturezaOcorrenciaDados,
+    getCategoriaOcorrenciaDados,
+    getTiposVinculosUniversidade,
+    postCriarRegistroOcorrencia,
+    postCriarItemSubtraido,
+    postCriarPessoa,
+    postCriarVinculoUniversidade } from "@/services/ocorrencia";
 
 export default {
     created() {
@@ -18,11 +26,11 @@ export default {
         },
         isEditar() {
             return Boolean(this.$route.params.uid);
-        }
+        },
     },
     methods: {
         formatDate(date) {
-            date = new Date(date); 
+            date = new Date(date);
             const year = date.getFullYear();
             let month = date.getMonth() + 1;
             let day = date.getDate();
@@ -52,7 +60,7 @@ export default {
         },
         makeVinculoUniversidadePayload() {
             return {
-                ...this.formUniversidade
+                ...this.formUniversidade,
             }
         },
         makePessoaPayload(universidade_uid) {
@@ -67,7 +75,7 @@ export default {
             return {
                 ...this.formLocal,
                 ...this.formOcorrencia,
-                pessoa_uid, item_uid
+                pessoa_uid, item_uid,
             }
         },
         makeAtualizarOcorrenciaPayload() {
@@ -90,12 +98,12 @@ export default {
                     vitima: {
                         ...this.updateOcorrencia.pessoa.vitima,
                         ...this.formVitima,
-                        data_nascimento: this.formatDate(this.formVitima.data_nascimento)
+                        data_nascimento: this.formatDate(this.formVitima.data_nascimento),
                     },
                     vinculo_universidade: {
                         ...this.formUniversidade,
-                    }
-                }
+                    },
+                },
 
             }
         },
@@ -103,7 +111,7 @@ export default {
             const latLng = event.latlng;
             this.markers = [{
                 id: this.nextMarkerId++,
-                latLng: [latLng.lat, latLng.lng]
+                latLng: [latLng.lat, latLng.lng],
             }]
             this.formLocal.latitude = latLng.lat;
             this.formLocal.longitude = latLng.lng;
@@ -122,36 +130,31 @@ export default {
                         this.nextStep();
                     }
                 });
-            }
-            else if (this.active === 1) {
+            } else if (this.active === 1) {
                 this.$refs.formVitima.validate(async (valid) => {
                     if (valid) {
                         this.nextStep();
                     }
                 });
-            }
-            else if (this.active === 2) {
+            } else if (this.active === 2) {
                 this.$refs.formOcorrencia.validate(async (valid) => {
                     if (valid) {
                         this.nextStep();
                     }
                 });
-            }
-            else if (this.active === 3) {
+            } else if (this.active === 3) {
                 this.$refs.formUniversidade.validate(async (valid) => {
                     if (valid) {
                         this.nextStep();
                     }
                 });
-            }
-            else if (this.active === 4) {
+            } else if (this.active === 4) {
                 this.$refs.formLocal.validate(async (valid) => {
                     if (valid) {
                         this.nextStep();
                     }
                 });
-            }
-            else if (this.active === 5) {
+            } else if (this.active === 5) {
                 // faça a request aqui
                 this.enivarFormulário();
             }
@@ -166,7 +169,7 @@ export default {
             try {
                 this.loading = true;
                 const data = await getOcorrenciasDetalhes(this.$route.params.uid);
-                let ocorrencia = this.camelToSnake(data);
+                const ocorrencia = this.camelToSnake(data);
                 console.log(ocorrencia);
                 this.updateOcorrencia = ocorrencia
                 this.formOcorrencia = {
@@ -188,7 +191,7 @@ export default {
                     telefone: ocorrencia.pessoa.vitima.telefone,
                 }
                 this.formUniversidade = {
-                    ...ocorrencia.pessoa.vinculo_universidade
+                    ...ocorrencia.pessoa.vinculo_universidade,
                 }
                 this.instrumento_portado = ocorrencia.pessoa.autor.instrumento_portado;
                 this.objeto = ocorrencia.item_subtraido.objeto;
@@ -199,13 +202,13 @@ export default {
                 }
                 this.markers = [{
                     id: this.nextMarkerId++,
-                    latLng: [ocorrencia.latitude, ocorrencia.longitude]
+                    latLng: [ocorrencia.latitude, ocorrencia.longitude],
                 }]
             } catch (error) {
                 this.$notify({
                     title: 'Falha ao acessar a ocorrência',
                     message: error?.response?.data?.message || '',
-                    type: 'error'
+                    type: 'error',
                 });
                 this.goBack();
             } finally {
@@ -222,7 +225,7 @@ export default {
                 this.$notify({
                     title: 'Sucesso!',
                     message: 'Registro atualizado com sucesso',
-                    type: 'success'
+                    type: 'success',
                 });
                 this.goBack();
             } catch (error) {
@@ -230,7 +233,7 @@ export default {
                 this.$notify({
                     title: 'Falha ao atualizar a ocorrência',
                     message: error?.response?.data?.message || '',
-                    type: 'error'
+                    type: 'error',
                 });
             } finally {
                 this.loading = false;
@@ -245,6 +248,17 @@ export default {
                 const pessoa = await postCriarPessoa(payloadPessoa);
                 const item_subtraido = await postCriarItemSubtraido({ objeto: this.objeto ?? 'N/A' });
                 const payloadOcorrencia = this.makeRegistroOcorrenciaPayload(pessoa.uid, item_subtraido.uid);
+                // const payloadOcorrencia = {
+                //     "descricao": "descricao teste",
+                //     "classificacao": "Teste",
+                //     "data_ocorrencia": "2023-10-23",
+                //     "local": "Campus Rural - Perto do p1",
+                //     "latitude": -22.7819,
+                //     "longitude": 43.6855,
+                //     "natureza_uid": "354dc290-ec17-4ea6-a745-7efbaaa7f48a",
+                //     "pessoa_uid": "df28c247-c0b3-49a7-9832-21bd8ac0bff9",
+                //     "item_uid": "a0bcb3e9-ffc2-4aee-834f-a1297edbc8d8"
+                // }
                 const result = await postCriarRegistroOcorrencia(payloadOcorrencia);
                 this.ocorrenciaResult = result;
                 this.active++
@@ -252,7 +266,7 @@ export default {
                 this.$notify({
                     title: 'Falha ao criar a ocorrência',
                     message: error?.response?.data?.message || 'Erro ao validar o formulário, revise os dados informados',
-                    type: 'error'
+                    type: 'error',
                 });
                 this.active = 0;
                 console.table(error);
@@ -271,6 +285,6 @@ export default {
             } catch (error) {
                 console.error(error);
             }
-        }
-    }
+        },
+    },
 }

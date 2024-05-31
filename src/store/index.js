@@ -10,11 +10,11 @@ export default new Vuex.Store({
     modules: {
         users: {
             namespaced: true,
-            ...users
+            ...users,
         },
         notification: {
             namespaced: true,
-            ...notification
+            ...notification,
         },
     },
 });
