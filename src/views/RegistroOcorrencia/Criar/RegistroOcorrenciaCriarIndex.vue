@@ -5,6 +5,14 @@
             content="Editar um Registro de Ocorrência"
             @back="goBack"
         />
+        <el-alert
+            v-if="erros.length"
+            title="Não foi possível processar a requsição"
+            type="error"
+            :description="makeErros"
+            show-icon
+            :closable="false"
+        />
         <el-card
             v-loading.fullscreen.lock="loading"
             element-loading-text="Enviando Dados..."
@@ -13,6 +21,35 @@
             class="mt-20"
         >
             <div>
+                <div
+                    v-if="active < 5 && !isEditar"
+                    class="flex justify-between mt-4 mb-10"
+                >
+                    <el-button
+                        style="margin-top: 12px"
+                        @click="back"
+                    >
+                        Voltar passo
+                    </el-button>
+                    <el-button
+                        style="margin-top: 12px"
+                        @click="next"
+                    >
+                        Próximo passo
+                    </el-button>
+                </div>
+                <el-steps
+                    v-if="active < 5 && !isEditar"
+                    :active="active"
+                    finish-status="success"
+                    class="mb-7"
+                >
+                    <el-step title="Passo 1" />
+                    <el-step title="Passo 2" />
+                    <el-step title="Passo 3" />
+                    <el-step title="Passo 4" />
+                    <el-step title="Passo 5" />
+                </el-steps>
                 <div v-if="active === 0 || isEditar">
                     <h2 class="text-2xl font-semibold mb-5">
                         Informações da Vitima
@@ -93,8 +130,6 @@
                                         v-model="formVitima.telefone"
                                         v-mask="['(##) ####-####', '(##) #####-####']"
                                         type="text"
-                                        maxlength="15"
-                                        show-word-limit
                                     />
                                 </el-form-item>
                             </div>
@@ -360,35 +395,7 @@
                     </div>
                 </div>
             </div>
-            <el-steps
-                v-if="active <= 5 && !isEditar"
-                :active="active"
-                finish-status="success"
-            >
-                <el-step title="Passo 1" />
-                <el-step title="Passo 2" />
-                <el-step title="Passo 3" />
-                <el-step title="Passo 4" />
-                <el-step title="Passo 5" />
-            </el-steps>
         </el-card>
-        <div
-            v-if="active <= 5 && !isEditar"
-            class="flex justify-between"
-        >
-            <el-button
-                style="margin-top: 12px"
-                @click="back"
-            >
-                Voltar passo
-            </el-button>
-            <el-button
-                style="margin-top: 12px"
-                @click="next"
-            >
-                Próximo passo
-            </el-button>
-        </div>
         <div
             v-if="isEditar"
             class="flex justify-end mt-3"
@@ -407,6 +414,7 @@
 <script>
 import mixin from "./RegistroOcorrencoaCriar.mixin";
 const requerido = { required: true, message: "Informe o valor correto", trigger: "blur" };
+import { validateCPF, validatePhone } from "@/utils";
 const localMapa = {
     required: true,
     message: "Marque no mapa o local da ocorrência",
@@ -416,7 +424,9 @@ export default {
     name: "RegistroOcorrenciaCriarIndex",
     mixins: [mixin],
     data: () => {
+        const vue = this;
         return {
+            erros: [],
             loading: false,
             copied: false,
             ocorrenciaResult: {},
@@ -439,7 +449,7 @@ export default {
             formVitima: {
                 email: "",
                 data_nascimento: "",
-                telefone: "",
+                telefone: null,
             },
             formOcorrencia: {
                 descricao: "",
@@ -457,7 +467,7 @@ export default {
             instrumento_portado: "",
             formPessoaRules: {
                 nome: [requerido],
-                rg: [requerido, this.validateCPF],
+                rg: [requerido, validateCPF],
                 endereco: [requerido],
                 genero: [requerido],
             },
@@ -467,7 +477,7 @@ export default {
                     { type: "email", message: "E-mail inválido", trigger: "blur" },
                 ],
                 data_nascimento: [requerido],
-                telefone: [requerido, this.validatePhone],
+                telefone: [requerido, validatePhone],
             },
             formOcorrenciaRules: {
                 descricao: [requerido],
@@ -489,6 +499,13 @@ export default {
             },
         };
     },
+    computed: {
+        makeErros() {
+            let string =  "";
+            this.erros.map(erro => string += erro.message + "\n")
+            return string;
+        },
+    },
     methods: {
         copiarDetalhesUid() {
             const elementoTemporario = document.createElement("textarea");
@@ -497,50 +514,6 @@ export default {
             elementoTemporario.select();
             document.execCommand("copy");
             this.copied = true;
-        },
-        validatePhone(rule, value, callback) {
-            const phoneRegex = /^(?:(?:\+|00)55\s?)?(?:\(?[1-9][0-9]\)?\s?)?(?:9\d{4}-?\d{4}|[2-8]\d{3}-?\d{4})$/;
-            if (!value) {
-                return callback(new Error("O telefone é obrigatório."));
-            } else if (!phoneRegex.test(value)) {
-                return callback(new Error("Formato de telefone inválido."));
-            } else {
-                callback();
-            }
-        },
-        validateCPF(rule, value, callback) {
-            const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
-            if (!value) {
-                return callback(new Error("O CPF é obrigatório."));
-            } else if (!cpfRegex.test(value)) {
-                return callback(new Error("Formato de CPF inválido."));
-            } else if (!this.isValidCPF(value)) {
-                return callback(new Error("CPF inválido."));
-            } else {
-                callback();
-            }
-        },
-        isValidCPF(cpf) {
-            cpf = cpf.replace(/[^\d]+/g, "");
-            if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
-                return false;
-            }
-            let soma = 0;
-            let resto;
-            for (let i = 1; i <= 9; i++) {
-                soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
-            }
-            resto = (soma * 10) % 11;
-            if (resto === 10 || resto === 11) resto = 0;
-            if (resto !== parseInt(cpf.substring(9, 10))) return false;
-            soma = 0;
-            for (let i = 1; i <= 10; i++) {
-                soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
-            }
-            resto = (soma * 10) % 11;
-            if (resto === 10 || resto === 11) resto = 0;
-            if (resto !== parseInt(cpf.substring(10, 11))) return false;
-            return true;
         },
     },
 };

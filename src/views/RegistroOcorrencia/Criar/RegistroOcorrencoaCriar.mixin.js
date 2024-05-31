@@ -1,4 +1,5 @@
-import { getOcorrenciasDetalhes,
+import {
+    getOcorrenciasDetalhes,
     pacthUpdateRegistroOcorrencia,
     getNaturezaOcorrenciaDados,
     getCategoriaOcorrenciaDados,
@@ -6,7 +7,8 @@ import { getOcorrenciasDetalhes,
     postCriarRegistroOcorrencia,
     postCriarItemSubtraido,
     postCriarPessoa,
-    postCriarVinculoUniversidade } from "@/services/ocorrencia";
+    postCriarVinculoUniversidade,
+} from "@/services/ocorrencia";
 
 export default {
     created() {
@@ -152,11 +154,9 @@ export default {
                 this.$refs.formLocal.validate(async (valid) => {
                     if (valid) {
                         this.nextStep();
+                        this.enivarFormulário();
                     }
                 });
-            } else if (this.active === 5) {
-                // faça a request aqui
-                this.enivarFormulário();
             }
         },
         nextStep() {
@@ -170,7 +170,6 @@ export default {
                 this.loading = true;
                 const data = await getOcorrenciasDetalhes(this.$route.params.uid);
                 const ocorrencia = this.camelToSnake(data);
-                console.log(ocorrencia);
                 this.updateOcorrencia = ocorrencia
                 this.formOcorrencia = {
                     descricao: ocorrencia.descricao,
@@ -235,6 +234,7 @@ export default {
                     message: error?.response?.data?.message || '',
                     type: 'error',
                 });
+                this.erros = error?.response?.data?.erros || [];
             } finally {
                 this.loading = false;
             }
@@ -242,24 +242,18 @@ export default {
         async enivarFormulário() {
             try {
                 this.loading = true;
+
                 const vinculoUniversidade = this.makeVinculoUniversidadePayload();
                 const universidade = await postCriarVinculoUniversidade(vinculoUniversidade);
+
                 const payloadPessoa = this.makePessoaPayload(universidade.uid);
                 const pessoa = await postCriarPessoa(payloadPessoa);
                 const item_subtraido = await postCriarItemSubtraido({ objeto: this.objeto ?? 'N/A' });
+
                 const payloadOcorrencia = this.makeRegistroOcorrenciaPayload(pessoa.uid, item_subtraido.uid);
-                // const payloadOcorrencia = {
-                //     "descricao": "descricao teste",
-                //     "classificacao": "Teste",
-                //     "data_ocorrencia": "2023-10-23",
-                //     "local": "Campus Rural - Perto do p1",
-                //     "latitude": -22.7819,
-                //     "longitude": 43.6855,
-                //     "natureza_uid": "354dc290-ec17-4ea6-a745-7efbaaa7f48a",
-                //     "pessoa_uid": "df28c247-c0b3-49a7-9832-21bd8ac0bff9",
-                //     "item_uid": "a0bcb3e9-ffc2-4aee-834f-a1297edbc8d8"
-                // }
+
                 const result = await postCriarRegistroOcorrencia(payloadOcorrencia);
+
                 this.ocorrenciaResult = result;
                 this.active++
             } catch (error) {
@@ -269,7 +263,8 @@ export default {
                     type: 'error',
                 });
                 this.active = 0;
-                console.table(error);
+                this.erros = error?.response?.data?.erros || [];
+                console.error(error);
             } finally {
                 this.loading = false;
             }

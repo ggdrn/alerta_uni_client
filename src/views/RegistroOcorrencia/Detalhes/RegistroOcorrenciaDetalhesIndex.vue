@@ -95,7 +95,7 @@
                                 <strong>Nome:</strong> {{ ocorrencia.pessoa.nome }}
                             </div>
                             <div class="mb-4">
-                                <strong>RG:</strong> {{ ocorrencia.pessoa.rg }}
+                                <strong>CPF:</strong> {{ ocorrencia.pessoa.rg }}
                             </div>
                             <div class="mb-4">
                                 <strong>Endereço:</strong> {{ ocorrencia.pessoa.endereco }}

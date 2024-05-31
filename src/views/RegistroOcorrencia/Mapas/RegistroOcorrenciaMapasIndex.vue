@@ -1,5 +1,60 @@
+<!-- eslint-disable vue/custom-event-name-casing -->
 <template>
     <div>
+        <!-- Card de filtro -->
+        <el-card class="filter-card mb-5">
+            <el-form
+                ref="filterForm"
+                :model="filterForm"
+                inline
+            >
+                <el-form-item label="Protocolo">
+                    <el-input v-model="filterForm.protocolo" />
+                </el-form-item>
+                <el-form-item label="Status">
+                    <el-select
+                        v-model="filterForm.status"
+                        placeholder="Selecione"
+                    >
+                        <el-option
+                            label="Todos"
+                            value=""
+                        />
+                        <el-option
+                            label="Aberta"
+                            value="aberta"
+                        />
+                        <el-option
+                            label="Processando"
+                            value="processando"
+                        />
+                        <el-option
+                            label="Denúncia não confirmada"
+                            value="Denúncia não confirmada"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Data">
+                    <el-date-picker
+                        v-model="filterForm.data_ocorrencia"
+                        type="daterange"
+                        range-separator="e"
+                        start-placeholder="Inicio"
+                        value-format="yyyy-MM-dd"
+                        placeholder="Selecione a data"
+                        format="dd/MM/yyyy"
+                        end-placeholder="Fim"
+                    />
+                </el-form-item>
+                <el-button
+                    :loading="loading"
+                    type="success"
+                    @click="getDados"
+                >
+                    Filtrar
+                </el-button>
+            </el-form>
+        </el-card>
         <el-card class="filter-card">
             <h2 class="text-2xl font-semibold mb-5">
                 Registro Ocorrência - Visualização em Mapas
@@ -59,6 +114,11 @@ export default {
     data: () => ({
         loading: false,
         detalhe: {},
+        filterForm: {
+            protocolo: "",
+            status: "",
+            data_ocorrencia: "",
+        },
         dialogVisible: false,
         zoom: 12, // Nível de zoom inicial
         center: [-22.7796, -43.7105], // Coordenadas iniciais do mapa
@@ -75,15 +135,31 @@ export default {
     methods: {
         async getDados() {
             try {
-                console.log('aquiiii')
                 this.loading = true;
-                const { data } = await getOcorrenciasListagem();
+                const { data } = await getOcorrenciasListagem(this.makeParams());
                 this.locations = data.map(item => ({ location: [item.latitude, item.longitude], uid: item.uid, protocolo: item.protocolo }))
             } catch (error) {
                 console.error(error);
             } finally {
                 this.loading = false;
             }
+        },
+        makeParams() {
+            if (this.filterForm.data_ocorrencia?.length) {
+                const data_inicial = new Date(this.filterForm.data_ocorrencia[0]);
+                const data_final = new Date(this.filterForm.data_ocorrencia[1]);
+                return {
+                    protocolo: this.filterForm.protocolo,
+                    status: this.filterForm.status,
+                    data_ocorrencia: { data_inicial, data_final },
+                }
+            } else {
+                return {
+                    protocolo: this.filterForm.protocolo,
+                    status: this.filterForm.status,
+                }
+            }
+
         },
         goTo() {
             this.$router.push({ name: 'RegistroOcorrenciaDetalhes', params: { uid: this.detalhe.uid } });

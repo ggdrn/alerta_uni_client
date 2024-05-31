@@ -1,14 +1,14 @@
 module.exports = {
     root: true,
     env: {
-      node: true,
+        node: true,
     },
     extends: [
         'eslint:recommended',
         'plugin:vue/recommended',
     ],
     parserOptions: {
-      ecmaVersion: 2020,
+        ecmaVersion: 2020,
     },
     rules: {
         // Boas praticas -> Podem ou nao serem corrigidas ao salvar
@@ -56,7 +56,6 @@ module.exports = {
         // Vue
         "vue/multi-word-component-names": "off",
         "vue/prop-name-casing": [0],
-        "vue/custom-event-name-casing": ["error", "kebab-case"],
         "vue/html-indent": ["error", 4, {
             "attribute": 1,
             "baseIndent": 1,
@@ -69,4 +68,4 @@ module.exports = {
         'no-console': ["warn", { allow: ["error"] }],
         'no-debugger': "error",
     },
-  };
+};
