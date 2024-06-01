@@ -97,6 +97,15 @@
                 </template>
             </el-table-column>
         </el-table>
+        <el-pagination
+            class="mt-4 mb-4"
+            :current-page.sync="ocorrencias.page"
+            :page-size.sync="ocorrencias.perPage"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="ocorrencias.totalRegistros"
+            @size-change="getDados"
+            @current-change="getDados"
+        />
     </div>
 </template>
 
@@ -113,7 +122,7 @@ export default {
                 data_ocorrencia: "",
             },
             ocorrencias: {
-                data: [], totalRegistros: 0, paginaAtual: 1,
+                data: [], totalRegistros: 0, page: 1,
             },
         };
     },
@@ -136,19 +145,28 @@ export default {
             }
         },
         makeParams() {
+            let params = {};
             if (this.filterForm.data_ocorrencia?.length) {
                 const data_inicial = new Date(this.filterForm.data_ocorrencia[0]);
                 const data_final = new Date(this.filterForm.data_ocorrencia[1]);
-                return {
+                params =  {
+                    ...params,
                     protocolo: this.filterForm.protocolo,
                     status: this.filterForm.status,
                     data_ocorrencia: { data_inicial, data_final  },
                 }
             } else {
-                return {
+                params = {
+                    ...params,
                     protocolo: this.filterForm.protocolo,
                     status: this.filterForm.status,
+
                 }
+            }
+            return params = {
+                ...params,
+                perPage: this.ocorrencias.perPage,
+                page: this.ocorrencias.page,
             }
 
         },

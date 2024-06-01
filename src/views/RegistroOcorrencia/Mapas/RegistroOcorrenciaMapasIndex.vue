@@ -104,6 +104,15 @@
                 </l-map>
             </div>
         </el-card>
+        <el-pagination
+            class="mt-4 mb-4"
+            :current-page.sync="pagination.page"
+            :page-size.sync="pagination.per_page"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.totalRegistros"
+            @size-change="getDados"
+            @current-change="getDados"
+        />
     </div>
 </template>
 
@@ -118,6 +127,11 @@ export default {
             protocolo: "",
             status: "",
             data_ocorrencia: "",
+        },
+        pagination: {
+            totalRegistros: 0,
+            per_page: 0,
+            page: 1,
         },
         dialogVisible: false,
         zoom: 12, // Nível de zoom inicial
@@ -136,8 +150,14 @@ export default {
         async getDados() {
             try {
                 this.loading = true;
-                const { data } = await getOcorrenciasListagem(this.makeParams());
+                const { data,
+                        page,
+                        per_page,
+                        totalRegistros } = await getOcorrenciasListagem(this.makeParams());
                 this.locations = data.map(item => ({ location: [item.latitude, item.longitude], uid: item.uid, protocolo: item.protocolo }))
+                this.pagination = {  page,
+                                     per_page,
+                                     totalRegistros }
             } catch (error) {
                 console.error(error);
             } finally {
@@ -145,19 +165,28 @@ export default {
             }
         },
         makeParams() {
+            let params = {};
             if (this.filterForm.data_ocorrencia?.length) {
                 const data_inicial = new Date(this.filterForm.data_ocorrencia[0]);
                 const data_final = new Date(this.filterForm.data_ocorrencia[1]);
-                return {
+                params =  {
+                    ...params,
                     protocolo: this.filterForm.protocolo,
                     status: this.filterForm.status,
-                    data_ocorrencia: { data_inicial, data_final },
+                    data_ocorrencia: { data_inicial, data_final  },
                 }
             } else {
-                return {
+                params = {
+                    ...params,
                     protocolo: this.filterForm.protocolo,
                     status: this.filterForm.status,
+
                 }
+            }
+            return params = {
+                ...params,
+                per_page: this.pagination.per_page,
+                page: this.pagination.page,
             }
 
         },

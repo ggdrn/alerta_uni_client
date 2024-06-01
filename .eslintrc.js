@@ -55,6 +55,7 @@ module.exports = {
         "template-curly-spacing": ["error", "never"],
         // Vue
         "vue/multi-word-component-names": "off",
+        "vue/no-v-model-argument": "off",
         "vue/prop-name-casing": [0],
         "vue/html-indent": ["error", 4, {
             "attribute": 1,
