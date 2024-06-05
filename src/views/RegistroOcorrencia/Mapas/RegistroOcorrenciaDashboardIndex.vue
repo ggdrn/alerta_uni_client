@@ -1,12 +1,71 @@
 <!-- eslint-disable vue/custom-event-name-casing -->
 <template>
-    <div>
+    <div class="flex flex-col gap-10">
+        <el-dialog
+            :title="`Ocorrência: ${detalhe.protocolo}`"
+            :visible.sync="dialogVisible"
+            width="30%"
+        >
+            <span>Deseja ver os detalhes dessa ocorrência?</span>
+            <span
+                slot="footer"
+                class="dialog-footer"
+            >
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button
+                    type="success"
+                    @click="goTo"
+                >Confirm</el-button>
+            </span>
+        </el-dialog>
+        <div>
+            <h2 class="text-3xl font-semibold mt-5">
+                Painel de Controle
+            </h2>
+        </div>
+        <div class="grid grid-cols-5 gap-5 mt-10">
+            <el-card class="flex items-center justify-center">
+                <h2>Total de Ocorrências</h2>
+
+                <h3>{{ ocorrenciasInfo.totalOcorrencias }}</h3>
+            </el-card>
+            <el-card class="flex items-center justify-center">
+                <h2>Ocorrências Abertas</h2>
+
+                <h3> {{ ocorrenciasInfo.totalAbertas }} </h3>
+            </el-card>
+            <el-card class="flex items-center justify-center">
+                <h2>Ocorrências Em Andamento</h2>
+                <h3>{{ ocorrenciasInfo.totalEmApuracao }}</h3>
+            </el-card>
+            <el-card class="flex items-center justify-center">
+                <h2>Ocorrências Encerradas</h2>
+
+                <h3>{{ ocorrenciasInfo.totalEncerradas }}</h3>
+            </el-card>
+            <el-card class="flex items-center justify-center">
+                <h2>Ocorrências Pendentes</h2>
+                <h3>{{ ocorrenciasInfo.totalPendetes }}</h3>
+            </el-card>
+        </div>
         <!-- Card de filtro -->
         <el-card class="filter-card mb-5">
+            <div class="flex w-full justify-between">
+                <h2 class="text-2xl font-semibold mb-5">
+                    Registro Ocorrência - Visualização em Mapas
+                </h2>
+                <el-button
+                    :loading="loading"
+                    type="success"
+                    @click="getDados"
+                >
+                    Filtrar
+                </el-button>
+            </div>
             <el-form
                 ref="filterForm"
+                class="flex items-end justify-between gap-1 flex-wrap"
                 :model="filterForm"
-                inline
             >
                 <el-form-item label="Protocolo">
                     <el-input v-model="filterForm.protocolo" />
@@ -50,36 +109,21 @@
                         end-placeholder="Fim"
                     />
                 </el-form-item>
-                <el-button
-                    :loading="loading"
-                    type="success"
-                    @click="getDados"
-                >
-                    Filtrar
-                </el-button>
+                <el-form-item label="Categoria da Ocorrência">
+                    <el-select
+                        v-model="filterForm.categoria_uid"
+                        clearable
+                        placeholder="Categoria da Ocorrência"
+                    >
+                        <el-option
+                            v-for="item in categoriaOptions"
+                            :key="item.uid"
+                            :label="item.nome"
+                            :value="item.uid"
+                        />
+                    </el-select>
+                </el-form-item>
             </el-form>
-        </el-card>
-        <el-card class="filter-card">
-            <h2 class="text-2xl font-semibold mb-5">
-                Registro Ocorrência - Visualização em Mapas
-            </h2>
-            <el-dialog
-                :title="`Ocorrência: ${detalhe.protocolo}`"
-                :visible.sync="dialogVisible"
-                width="30%"
-            >
-                <span>Deseja ver os detalhes dessa ocorrência?</span>
-                <span
-                    slot="footer"
-                    class="dialog-footer"
-                >
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button
-                        type="success"
-                        @click="goTo"
-                    >Confirm</el-button>
-                </span>
-            </el-dialog>
             <div
                 v-if="loading"
                 class="flex justify-center"
@@ -121,14 +165,16 @@
 </template>
 
 <script>
-import { getOcorrenciasListagem } from "@/services/ocorrencia";
+import { getOcorrenciasListagem, getRegistroOcorrenciaDashboard, getCategoriaOcorrenciaDados } from "@/services/ocorrencia";
 export default {
     name: "RegistroOcorrenciaMapasIndex",
     data: () => ({
         loading: false,
         detalhe: {},
+        categoriaOptions: [],
         filterForm: {
             protocolo: "",
+            categoria_uid: "",
             status: "",
             data_ocorrencia: "",
         },
@@ -137,7 +183,9 @@ export default {
             perPage: 20,
             page: 1,
         },
+        ocorrenciasInfo: {},
         dialogVisible: false,
+        loadingInfo: false,
         zoom: 12, // Nível de zoom inicial
         center: [-22.7796, -43.7105], // Coordenadas iniciais do mapa
         tileLayerUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', // URL do tile layer (OpenStreetMap)
@@ -149,6 +197,8 @@ export default {
     }),
     created() {
         this.getDados();
+        this.getRegistroOcorrenciaDashboard();
+        this.getCategoriaOcorrenciaDados();
     },
     methods: {
         async getDados() {
@@ -168,6 +218,21 @@ export default {
                 this.loading = false;
             }
         },
+        async getRegistroOcorrenciaDashboard() {
+            try {
+                this.loadingInfo = true;
+                const result = await getRegistroOcorrenciaDashboard();
+                this.ocorrenciasInfo = result;
+            } catch (error) {
+                console.error(error)
+            } finally {
+                this.loadingInfo = false;
+            }
+        },
+        async getCategoriaOcorrenciaDados() {
+            const categoria = await getCategoriaOcorrenciaDados();
+            this.categoriaOptions = categoria;
+        },
         makeParams() {
             let params = {};
             if (this.filterForm.data_ocorrencia?.length) {
@@ -177,6 +242,7 @@ export default {
                     ...params,
                     protocolo: this.filterForm.protocolo,
                     status: this.filterForm.status,
+                    categoria_uid: this.filterForm.categoria_uid,
                     data_ocorrencia: { data_inicial, data_final  },
                 }
             } else {
@@ -184,6 +250,7 @@ export default {
                     ...params,
                     protocolo: this.filterForm.protocolo,
                     status: this.filterForm.status,
+                    categoria_uid: this.filterForm.categoria_uid,
 
                 }
             }

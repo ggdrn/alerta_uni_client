@@ -133,30 +133,37 @@
                         <div class="mb-4">
                             <strong>Status:</strong> {{ ocorrencia.statusExibicao }}
                         </div>
-                        <div
-                            v-for="(item, index) in historicoStatus"
-                            :key="index"
-                            class="flex flex-col gap-4 mt-3 mb-3 border-b pl-7 pb-3 pt-3"
+
+                        <el-timeline
+                            class="mt-3 mb-6 pl-7"
                         >
-                            <div class="flex items-center gap-4">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-gray-500">{{ item.statusAntigoExibicao }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <el-icon
-                                        class="text-gray-400 el-icon-right"
-                                        :size="20"
-                                    />
-                                    <span class="text-gray-500">{{ item.statusNovoExibicao }}</span>
-                                </div>
-                                <span class="text-gray-400">-</span>
-                                <span class="text-gray-500">{{ formatarData(item.createdAt) }}</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-600 font-bold">Justificativa:</span>
-                                <span class="text-gray-500"> {{ item.justificativa }}</span>
-                            </div>
-                        </div>
+                            <el-timeline-item
+                                v-for="(item, index) in historicoStatus"
+                                :key="index"
+                                :timestamp="formatarData(item.createdAt)"
+                                placement="top"
+                            >
+                                <el-card>
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-gray-500">{{ item.statusAntigoExibicao }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <el-icon
+                                                class="text-gray-400 el-icon-right"
+                                                :size="20"
+                                            />
+                                            <span class="text-gray-500">{{ item.statusNovoExibicao }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-show="item.justificativa">
+                                        <span class="text-gray-600 font-bold">Justificativa:</span>
+                                        <span class="text-gray-500"> {{ item.justificativa }}</span>
+                                    </div>
+                                </el-card>
+                            </el-timeline-item>
+                        </el-timeline>
+
                         <div class="mb-4">
                             <strong>Categoria da Ocorrência:</strong> {{ ocorrencia.naturezaOcorrencium.categoriaOcorrencium.nome }}
                         </div>

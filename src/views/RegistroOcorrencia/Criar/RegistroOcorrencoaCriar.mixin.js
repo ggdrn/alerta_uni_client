@@ -5,9 +5,6 @@ import {
     getCategoriaOcorrenciaDados,
     getTiposVinculosUniversidade,
     postCriarRegistroOcorrencia,
-    postCriarItemSubtraido,
-    postCriarPessoa,
-    postCriarVinculoUniversidade,
 } from "@/services/ocorrencia";
 
 export default {
@@ -184,7 +181,6 @@ export default {
                     endereco: ocorrencia.pessoa.endereco,
                     genero: ocorrencia.pessoa.genero,
                 }
-                console.log(ocorrencia)
                 this.formVitima = {
                     email: ocorrencia?.pessoa?.vitima?.email,
                     data_nascimento: ocorrencia?.pessoa?.vitima?.data_nascimento,

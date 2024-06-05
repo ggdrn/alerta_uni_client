@@ -9,22 +9,38 @@ const router = new Router({
         {
             path: "/",
             component: () => import("./layouts/default"),
-            meta: { requireAuth: true }, // validação de autenticação
+            meta: { requireAuth: true, isAdmin: true }, // validação de autenticação
             children: [
                 {
                     path: '/registro-ocorrencia/listagem',
                     name: 'RegistroOcorrenciaLisagem',
                     component: () => import('@/views/RegistroOcorrencia/Lista/RegistroOcorrenciaLisagemIndex'),
                 },
+
+                {
+                    path: '/registro-ocorrencia/dashboard',
+                    name: 'RegistroOcorrenciaDashboard',
+                    component: () => import('@/views/RegistroOcorrencia/Mapas/RegistroOcorrenciaDashboardIndex'),
+                },
+
+                {
+                    path: '/registro-ocorrencia/editar/:uid',
+                    name: 'RegistroOcorrenciaAtualizar',
+                    component: () => import('@/views/RegistroOcorrencia/Criar/RegistroOcorrenciaCriarIndex'),
+                },
+
+            ],
+        },
+        {
+            path: "/",
+            component: () => import("./layouts/default"),
+            meta: { requireAuth: true, isAdmin: false }, // validação de autenticação
+            children: [
+
                 {
                     path: '/registro-ocorrencia/criar',
                     name: 'RegistroOcorrenciaCriar',
                     component: () => import('@/views/RegistroOcorrencia/Criar/RegistroOcorrenciaCriarIndex'),
-                },
-                {
-                    path: '/registro-ocorrencia/mapa',
-                    name: 'RegistroOcorrenciaMapas',
-                    component: () => import('@/views/RegistroOcorrencia/Mapas/RegistroOcorrenciaMapasIndex'),
                 },
                 {
                     path: '/registro-ocorrencia/detalhes/:uid',
@@ -32,9 +48,9 @@ const router = new Router({
                     component: () => import('@/views/RegistroOcorrencia/Detalhes/RegistroOcorrenciaDetalhesIndex'),
                 },
                 {
-                    path: '/registro-ocorrencia/editar/:uid',
-                    name: 'RegistroOcorrenciaAtualizar',
-                    component: () => import('@/views/RegistroOcorrencia/Criar/RegistroOcorrenciaCriarIndex'),
+                    path: '/registro-ocorrencia/protocolo',
+                    name: 'BuscaProtocolo',
+                    component: () => import('@/views/BuscaProtocolo/BuscaProtocolo'),
                 },
 
             ],
@@ -62,7 +78,17 @@ router.beforeEach(async (to, from, next) => {
     const hasUser = JSON.parse(sessionStorage.getItem("user")) || false;
     if (to.matched.some(record => record.meta.requireAuth)) {
         if (hasUser) {
+            if (to.matched.some(record => record.meta.isAdmin) && hasUser.usuarioTipo === 1) {
+                next();
+            } else {
+                if (!to.matched.some(record => record.meta.isAdmin)) {
+                    next();
+                } else {
+                    next("/registro-ocorrencia/protocolo");
+                }
+            }
             next();
+
         } else {
             next("/login");
         }

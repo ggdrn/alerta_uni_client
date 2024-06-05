@@ -21,6 +21,11 @@ export const getUsersList = async (queryString = '') => {
     return { results: data, count, total: Number(total) }
 }
 
+export const logoutUser = async () => {
+    const api = configAxios();
+    await api.get(`users/logout`);
+}
+
 export const updateUserInList = async (user) => {
     const api = configAxios();
     await api.patch(`users/${user.id}`, user);

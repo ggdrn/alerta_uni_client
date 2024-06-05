@@ -6,7 +6,7 @@ import { downloadBlobCsv } from "@/utils"
 Vue.use(VueCookies);
 
 export const state = {
-    usersList: Vue.$cookies.get('usersList') != undefined ? Vue.$cookies.get('usersList') : {
+    usersList: Vue.$cookies.get('usersList') !== undefined ? Vue.$cookies.get('usersList') : {
         results: [], count: 0, total: 0,
     },
 }
@@ -36,7 +36,7 @@ export const actions = {
         await deleteUserInList(id);
     },
     async exportUserCsv({ commit, dispatch }, type) {
-        if (type == 'all') {
+        if (type === 'all') {
             await dispatch('getUsers');
         }
         commit('EXPORT_CSV');

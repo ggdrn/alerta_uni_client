@@ -6,9 +6,15 @@ export const getOcorrenciasListagem = async (params = {}) => {
     return data;
 }
 
-export const getOcorrenciasDetalhes = async (uid) => {
+export const getRegistroOcorrenciaDashboard = async (params = {}) => {
     const api = configAxios();
-    const { data } = await api.get(`registro_ocorrencia/detalhes/${uid}`);
+    const { data } = await api.get(`registro_ocorrencia/dashboard/total`, { params });
+    return data;
+}
+
+export const getOcorrenciasDetalhes = async (uid, params) => {
+    const api = configAxios();
+    const { data } = await api.get(`registro_ocorrencia/detalhes/${uid}`, { params });
     return data;
 }
 export const getCategoriaOcorrenciaDados = async () => {

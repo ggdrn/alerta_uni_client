@@ -13,16 +13,24 @@
                 </template>
                 <el-menu-item-group title="Opções">
                     <el-menu-item
-                        index="RegistroOcorrenciaMapas"
-                        @click="goTo('RegistroOcorrenciaMapas')"
+                        v-if="hasUser.usuarioTipo === 1"
+                        index="RegistroOcorrenciaDashboard"
+                        @click="goTo('RegistroOcorrenciaDashboard')"
                     >
                         <i class="el-icon-s-data" /> <span> Painel de Controle </span>
                     </el-menu-item>
                     <el-menu-item
+                        v-if="hasUser.usuarioTipo === 1"
                         index="RegistroOcorrenciaLisagem"
                         @click="goTo('RegistroOcorrenciaLisagem')"
                     >
                         <i class="el-icon-folder-opened" /> <span> Listagem </span>
+                    </el-menu-item>
+                    <el-menu-item
+                        index="BuscaProtocolo"
+                        @click="goTo('BuscaProtocolo')"
+                    >
+                        <i class="el-icon-search" /> <span> Pesquisar Ocorrência </span>
                     </el-menu-item>
                     <el-menu-item
                         index="RegistroOcorrenciaCriar"
@@ -32,21 +40,10 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
-            <!-- <el-menu-item
-                index="ListagemVitimas"
-                @click="goTo('ListagemVitimas')"
-            >
-                <i class="el-icon-user" />
-                <span>Listagem de Vitimas</span>
-            </el-menu-item>
             <el-menu-item
-                index="ConfiguracaoPerfil"
-                @click="goTo('ConfiguracaoPerfil')"
+                index="4"
+                @click="logout"
             >
-                <i class="el-icon-setting" />
-                <span>Configuração do Perfil</span>
-            </el-menu-item> -->
-            <el-menu-item index="4">
                 <i class="el-icon-switch-button" />
                 <span>Sair</span>
             </el-menu-item>
@@ -55,6 +52,7 @@
 </template>
 
 <script>
+import { logoutUser } from "../services/users"
 export default {
     computed: {
         activeRoute() {
@@ -67,10 +65,23 @@ export default {
             }
             return routeName;
         },
+        hasUser() {
+            const hasUser = JSON.parse(sessionStorage.getItem("user"))
+            return hasUser;
+        },
     },
     methods: {
         goTo(name) {
             this.$router.push({ name })
+        },
+        async logout() {
+            try {
+                await logoutUser();
+                sessionStorage.removeItem("user");
+                this.$router.push({ name: "login" })
+            } catch (error) {
+                console.error(error)
+            }
         },
     },
 }
