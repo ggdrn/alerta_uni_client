@@ -1,6 +1,8 @@
 <template>
     <el-header class="header-desktop">
-        <div class="container mx-auto flex items-center justify-between">
+        <div
+            class="container mx-auto flex items-center justify-between"
+        >
             <div>
                 <img
                     :src="logo"
@@ -41,11 +43,8 @@ export default {
     z-index: 2;
 }
 .header-desktop .container {
-    // height: 60px;
-    // position:fixed;
+    height: 60px;
     width: 100%;
-    margin-bottom: 54px;
-    // z-index: 99999 !important;
     background: #fff;
 }
 .user-section {

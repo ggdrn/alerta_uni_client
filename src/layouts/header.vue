@@ -1,6 +1,9 @@
 <template>
     <nav class="header-desktop">
-        <div class="container mx-auto flex items-center justify-between">
+        <div
+
+            class="container mx-auto flex items-center justify-between"
+        >
             <div>
                 <img
                     :src="logo"

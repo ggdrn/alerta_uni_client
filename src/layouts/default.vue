@@ -30,6 +30,7 @@ body {
 }
 .content-principal {
     margin-left: 220px; /* Margem à esquerda para acomodar o menu lateral */
+    padding-inline: 50px !important;
     padding: 20px;
     box-sizing: border-box; /* Inclui padding no tamanho total */
 }

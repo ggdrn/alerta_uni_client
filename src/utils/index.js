@@ -84,3 +84,17 @@ export function isValidCPF(cpf) {
     if (resto !== parseInt(cpf.substring(10, 11))) return false;
     return true;
 }
+
+export const genderOptions = [
+    { label: 'Masculino', value: 'masculino' },
+    { label: 'Feminino', value: 'feminino' },
+    { label: 'Transgênero', value: 'transgenero' },
+    { label: 'Gênero Neutro', value: 'genero_neutro' },
+    { label: 'Não-Binário', value: 'nao_binario' },
+    { label: 'Agênero', value: 'agenero' },
+    { label: 'Pangênero', value: 'pangenero' },
+    { label: 'Genderqueer', value: 'genderqueer' },
+    { label: 'Two-Spirit', value: 'two_spirit' },
+    { label: 'Terceiro Gênero', value: 'terceiro_genero' },
+    { label: 'Outros', value: 'outros' },
+]

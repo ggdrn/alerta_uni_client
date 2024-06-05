@@ -193,7 +193,7 @@ export default {
                     ...ocorrencia.pessoa.vinculo_universidade,
                 }
                 this.instrumento_portado = ocorrencia.pessoa.autor.instrumento_portado;
-                this.objeto = ocorrencia.item_subtraido.objeto;
+                this.objeto = ocorrencia?.item_subtraido?.objeto;
                 this.formLocal = {
                     local: ocorrencia.local,
                     latitude: ocorrencia.latitude,
@@ -204,6 +204,7 @@ export default {
                     latLng: [ocorrencia.latitude, ocorrencia.longitude],
                 }]
             } catch (error) {
+                console.error(error)
                 this.$notify({
                     title: 'Falha ao acessar a ocorrência',
                     message: error?.response?.data?.message || '',
@@ -242,17 +243,25 @@ export default {
         async enivarFormulário() {
             try {
                 this.loading = true;
-
+                this.erros = [];
                 const vinculoUniversidade = this.makeVinculoUniversidadePayload();
-                const universidade = await postCriarVinculoUniversidade(vinculoUniversidade);
+                // const universidade = await postCriarVinculoUniversidade(vinculoUniversidade);
 
-                const payloadPessoa = this.makePessoaPayload(universidade.uid);
-                const pessoa = await postCriarPessoa(payloadPessoa);
-                const item_subtraido = await postCriarItemSubtraido({ objeto: this.objeto ?? 'N/A' });
+                const payloadPessoa = this.makePessoaPayload('');
+                // const pessoa = await postCriarPessoa(payloadPessoa);
+                // const item_subtraido = await postCriarItemSubtraido({ objeto: this.objeto ?? 'N/A' });
 
-                const payloadOcorrencia = this.makeRegistroOcorrenciaPayload(pessoa.uid, item_subtraido.uid);
+                const payloadOcorrencia = this.makeRegistroOcorrenciaPayload('', '');
 
-                const result = await postCriarRegistroOcorrencia(payloadOcorrencia);
+                const payload = {
+                    ...payloadOcorrencia,
+                    ...payloadPessoa,
+                    ...{ objeto: this.objeto ?? 'N/A' },
+                    ...vinculoUniversidade,
+                }
+
+                const result = await postCriarRegistroOcorrencia(payload);
+                // const result = await postCriarRegistroOcorrencia(payloadOcorrencia);
 
                 this.ocorrenciaResult = result;
                 this.active++

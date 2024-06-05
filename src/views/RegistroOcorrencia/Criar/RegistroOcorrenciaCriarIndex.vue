@@ -96,7 +96,18 @@
                                     label="Gênero"
                                     prop="genero"
                                 >
-                                    <el-input v-model="formPessoa.genero" />
+                                    <el-select
+                                        v-model="formPessoa.genero"
+                                        placeholder="Selecione o gênero"
+                                    >
+                                        <el-option
+                                            v-for="(item, index) in genderOptions"
+                                            :key="index"
+                                            :label="item.label"
+                                            :value="item.value"
+                                        />
+                                    </el-select>
+                                    <!-- <el-input v-model="" /> -->
                                 </el-form-item>
                             </div>
                         </div>
@@ -414,7 +425,7 @@
 <script>
 import mixin from "./RegistroOcorrencoaCriar.mixin";
 const requerido = { required: true, message: "Informe o valor correto", trigger: "blur" };
-import { validateCPF, validatePhone } from "@/utils";
+import { validateCPF, validatePhone, genderOptions } from "@/utils";
 const localMapa = {
     required: true,
     message: "Marque no mapa o local da ocorrência",
@@ -424,7 +435,6 @@ export default {
     name: "RegistroOcorrenciaCriarIndex",
     mixins: [mixin],
     data: () => {
-        const vue = this;
         return {
             erros: [],
             loading: false,
@@ -497,6 +507,7 @@ export default {
                 latitude: "",
                 longitude: "",
             },
+            genderOptions,
         };
     },
     computed: {

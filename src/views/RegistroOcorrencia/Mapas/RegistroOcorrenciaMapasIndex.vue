@@ -107,7 +107,7 @@
         <el-pagination
             class="mt-4 mb-4"
             :current-page.sync="pagination.page"
-            :page-size.sync="pagination.per_page"
+            :page-size.sync="pagination.perPage"
             layout="total, sizes, prev, pager, next, jumper"
             :total="pagination.totalRegistros"
             @size-change="getDados"
@@ -130,7 +130,7 @@ export default {
         },
         pagination: {
             totalRegistros: 0,
-            per_page: 0,
+            perPage: 20,
             page: 1,
         },
         dialogVisible: false,
@@ -152,11 +152,11 @@ export default {
                 this.loading = true;
                 const { data,
                         page,
-                        per_page,
+                        perPage,
                         totalRegistros } = await getOcorrenciasListagem(this.makeParams());
                 this.locations = data.map(item => ({ location: [item.latitude, item.longitude], uid: item.uid, protocolo: item.protocolo }))
                 this.pagination = {  page,
-                                     per_page,
+                                     perPage,
                                      totalRegistros }
             } catch (error) {
                 console.error(error);
@@ -185,7 +185,7 @@ export default {
             }
             return params = {
                 ...params,
-                per_page: this.pagination.per_page,
+                perPage: this.pagination.perPage,
                 page: this.pagination.page,
             }
 
