@@ -5,14 +5,7 @@
             content="Editar um Registro de Ocorrência"
             @back="goBack"
         />
-        <el-alert
-            v-if="erros.length"
-            title="Não foi possível processar a requsição"
-            type="error"
-            :description="makeErros"
-            show-icon
-            :closable="false"
-        />
+
         <el-card
             v-loading.fullscreen.lock="loading"
             element-loading-text="Enviando Dados..."
@@ -20,6 +13,16 @@
             element-loading-background="rgba(0, 0, 0, 0.8)"
             class="mt-20"
         >
+            <div class="mb-5">
+                <el-alert
+                    v-if="erros.length"
+                    title="Não foi possível processar a requsição"
+                    type="error"
+                    :description="makeErros"
+                    show-icon
+                    :closable="false"
+                />
+            </div>
             <div>
                 <div
                     v-if="active < 5 && !isEditar"
@@ -56,6 +59,7 @@
                     </h2>
                     <el-form
                         ref="formPessoa"
+                        :disabled="loading"
                         :model="formPessoa"
                         :rules="formPessoaRules"
                         label-position="top"
@@ -121,6 +125,7 @@
                         ref="formVitima"
                         :model="formVitima"
                         :rules="formVitimaRules"
+                        :disabled="loading"
                         label-position="top"
                     >
                         <div class="grid grid-cols-2 gap-4">
@@ -169,6 +174,7 @@
                         ref="formOcorrencia"
                         :model="formOcorrencia"
                         :rules="formOcorrenciaRules"
+                        :disabled="loading"
                         label-position="top"
                     >
                         <div>
@@ -271,6 +277,7 @@
                     <el-form
                         ref="formUniversidade"
                         :model="formUniversidade"
+                        :disabled="loading"
                         :rules="formUniversidadeRules"
                         label-position="top"
                     >
@@ -324,6 +331,7 @@
                     <el-form
                         ref="formLocal"
                         :model="formLocal"
+                        :disabled="loading"
                         :rules="formLocalRules"
                         label-position="top"
                     >

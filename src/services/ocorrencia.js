@@ -49,9 +49,14 @@ export const postCriarItemSubtraido = async (payload) => {
     const { data: { data } } = await api.post(`item_subtraido/criar`, payload);
     return data;
 }
-export const pacthStatusRegistroOcorrencia = async (uid, status) => {
+export const pacthStatusRegistroOcorrencia = async (uid, payload) => {
     const api = configAxios();
-    const { data } = await api.patch(`registro_ocorrencia/mudar_status/${uid}`, { status });
+    const { data } = await api.patch(`registro_ocorrencia/mudar_status/${uid}`, payload);
+    return data;
+}
+export const getStatusRegistroOcorrencia = async (uid) => {
+    const api = configAxios();
+    const { data } = await api.get(`registro_ocorrencia/historico_status/${uid}`);
     return data;
 }
 

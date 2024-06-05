@@ -6,6 +6,7 @@
                 ref="filterForm"
                 :model="filterForm"
                 inline
+                :disabled="loading"
             >
                 <el-form-item label="Protocolo">
                     <el-input v-model="filterForm.protocolo" />
@@ -24,12 +25,16 @@
                             value="aberta"
                         />
                         <el-option
-                            label="Processando"
-                            value="processando"
+                            label="Pendente"
+                            value="pendente"
                         />
                         <el-option
-                            label="Denúncia não confirmada"
-                            value="Denúncia não confirmada"
+                            label="Denúncia em Apuração"
+                            value="apuracao"
+                        />
+                        <el-option
+                            label="Encerrada"
+                            value="encerrada"
                         />
                     </el-select>
                 </el-form-item>
@@ -76,7 +81,7 @@
                 </template>
             </el-table-column>
             <el-table-column
-                prop="status"
+                prop="statusExibicao"
                 label="Status"
             />
             <el-table-column label="Data da Ocorrência">
@@ -140,6 +145,7 @@ export default {
                 this.ocorrencias = result;
             } catch (error) {
                 console.error(error);
+                this.ocorrencias = [];
             } finally {
                 this.loading = false;
             }

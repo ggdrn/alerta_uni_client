@@ -184,15 +184,16 @@ export default {
                     endereco: ocorrencia.pessoa.endereco,
                     genero: ocorrencia.pessoa.genero,
                 }
+                console.log(ocorrencia)
                 this.formVitima = {
-                    email: ocorrencia.pessoa.vitima.email,
-                    data_nascimento: ocorrencia.pessoa.vitima.data_nascimento,
-                    telefone: ocorrencia.pessoa.vitima.telefone,
+                    email: ocorrencia?.pessoa?.vitima?.email,
+                    data_nascimento: ocorrencia?.pessoa?.vitima?.data_nascimento,
+                    telefone: ocorrencia?.pessoa?.vitima?.telefone,
                 }
                 this.formUniversidade = {
                     ...ocorrencia.pessoa.vinculo_universidade,
                 }
-                this.instrumento_portado = ocorrencia.pessoa.autor.instrumento_portado;
+                this.instrumento_portado = ocorrencia?.pessoa?.autor?.instrumento_portado;
                 this.objeto = ocorrencia?.item_subtraido?.objeto;
                 this.formLocal = {
                     local: ocorrencia.local,

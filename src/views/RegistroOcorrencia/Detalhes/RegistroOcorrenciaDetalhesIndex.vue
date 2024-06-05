@@ -1,5 +1,84 @@
 <template>
     <div>
+        <!-- Modal para Troca de Status -->
+        <el-dialog
+            title="Troca de Status"
+            :visible.sync="modalVisivel"
+            width="55%"
+        >
+            <el-form
+                ref="formTrocaStatus"
+                :model="formTrocaStatus"
+                :rules="formTrocaRules"
+                label-width="120px"
+            >
+                <el-form-item
+                    label="Status Antigo:"
+                >
+                    <el-select
+                        v-model="formTrocaStatus.statusAntigo"
+                        disabled
+                    />
+                </el-form-item>
+                <el-form-item
+                    prop="novoStatus"
+                    label="Novo Status:"
+                >
+                    <el-select
+                        v-model="formTrocaStatus.novoStatus"
+                        placeholder="Selecione um status"
+                    >
+                        <el-option
+                            label="Aberta"
+                            value="aberta"
+                            :disabled="ocorrencia.status === 'aberta'"
+                        />
+                        <el-option
+                            label="Pendente"
+                            value="pendente"
+                            :disabled="ocorrencia.status === 'pendente'"
+                        />
+                        <el-option
+                            label="Denúncia em Apuração"
+                            value="apuracao"
+                            :disabled="ocorrencia.status === 'apuracao'"
+                        />
+                        <el-option
+                            label="Encerrada"
+                            :disabled="ocorrencia.status === 'encerrada'"
+                            value="encerrada"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Justificativa:">
+                    <el-input
+                        v-model="formTrocaStatus.justificativa"
+                        type="textarea"
+                        placeholder="Informe a justificativa para a troca de status"
+                        :rows="4"
+                        :autosize="{ minRows: 4, maxRows: 8 }"
+                        required
+                    />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button
+                    size="small"
+                    :disabled="loadingBtn"
+                    @click="cancelarTrocaStatus"
+                >
+                    Cancelar
+                </el-button>
+                <el-button
+                    type="primary"
+                    size="small"
+                    :loading="loadingBtn"
+                    @click="confirmarTrocaStatus"
+                >
+                    Confirmar
+                </el-button>
+            </template>
+        </el-dialog>
         <el-card class="filter-card">
             <el-skeleton
                 v-if="loading"
@@ -21,26 +100,18 @@
                             <el-button
                                 :loading="loadingBtn"
                                 size="small"
-                                type="success"
-                                @click="mudarStatus('Processando')"
-                            >
-                                Encaminhar Ocorrência
-                            </el-button>
-                            <el-button
-                                :loading="loadingBtn"
-                                size="small"
                                 type="primary"
                                 @click="editarOcorrencia()"
                             >
                                 Editar Ocorrência
                             </el-button>
                             <el-button
+                                type="primary"
                                 :loading="loadingBtn"
                                 size="small"
-                                type="danger"
-                                @click="mudarStatus('Denúncia não confirmada')"
+                                @click="abrirModalTrocaStatus(ocorrencia)"
                             >
-                                Cancelar Ocorrência
+                                Alterar Status
                             </el-button>
                         </div>
                         <el-divider />
@@ -60,7 +131,31 @@
                             <strong>Classificação:</strong> {{ ocorrencia.classificacao }}
                         </div>
                         <div class="mb-4">
-                            <strong>Status:</strong> {{ ocorrencia.status }}
+                            <strong>Status:</strong> {{ ocorrencia.statusExibicao }}
+                        </div>
+                        <div
+                            v-for="(item, index) in historicoStatus"
+                            :key="index"
+                            class="flex flex-col gap-4 mt-3 mb-3 border-b pl-7 pb-3 pt-3"
+                        >
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-500">{{ item.statusAntigoExibicao }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <el-icon
+                                        class="text-gray-400 el-icon-right"
+                                        :size="20"
+                                    />
+                                    <span class="text-gray-500">{{ item.statusNovoExibicao }}</span>
+                                </div>
+                                <span class="text-gray-400">-</span>
+                                <span class="text-gray-500">{{ formatarData(item.createdAt) }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600 font-bold">Justificativa:</span>
+                                <span class="text-gray-500"> {{ item.justificativa }}</span>
+                            </div>
                         </div>
                         <div class="mb-4">
                             <strong>Categoria da Ocorrência:</strong> {{ ocorrencia.naturezaOcorrencium.categoriaOcorrencium.nome }}
@@ -123,7 +218,13 @@
                                 v-show="ocorrencia.pessoa.autor"
                                 class="mb-4"
                             >
-                                <strong>Instrumento portado do Autor:</strong> {{ ocorrencia.pessoa.autor.instrumentoPortado }}
+                                <strong>Instrumento portado do Autor:</strong> {{ ocorrencia.pessoa?.autor?.instrumentoPortado }}
+                            </div>
+                            <div
+                                v-show="ocorrencia.itemSubtraido?.objeto"
+                                class="mb-4"
+                            >
+                                <strong>Item subtraído:</strong> {{ ocorrencia.itemSubtraido?.objeto }}
                             </div>
                         </div>
                         <el-divider />
@@ -156,7 +257,8 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import markerIcon from '@/assets/marker.png'; // Substitua pelo caminho da sua imagem
-import { getOcorrenciasDetalhes, pacthStatusRegistroOcorrencia } from "@/services/ocorrencia";
+import { getOcorrenciasDetalhes, pacthStatusRegistroOcorrencia, getStatusRegistroOcorrencia } from "@/services/ocorrencia";
+const requerido = { required: true, message: "Informe o valor correto", trigger: "blur" };
 export default {
     name: "RegistroOcorrenciaDetalhesIndex",
     data() {
@@ -166,7 +268,20 @@ export default {
 
             },
             user: {},
+            historicoStatus: [],
             loadingBtn: false,
+            loadingStatus: false,
+            modalVisivel: false,
+            formTrocaStatus: {
+                statusAntigo: "",
+                novoStatus: "",
+                justificativa: "",
+            },
+            formTrocaRules: {
+                statusAntigo: [requerido],
+                novoStatus: [requerido],
+                justificativa: [requerido],
+            },
         };
     },
     computed: {
@@ -176,6 +291,7 @@ export default {
     },
     async created() {
         await this.getDados();
+        await this.getHistoricoStatus();
         this.montarMapa();
         const user = JSON.parse(sessionStorage.getItem("user"));
         this.user = user;
@@ -205,15 +321,22 @@ export default {
                 this.loading = false;
             }
         },
-        async mudarStatus(status) {
+        async mudarStatus() {
             try {
                 this.loadingBtn = true;
-                await pacthStatusRegistroOcorrencia(this.ocorrencia.uid, status);
+                const payload = {
+                    status_antigo: this.ocorrencia.status,
+                    status_novo: this.formTrocaStatus.novoStatus,
+                    justificativa: this.formTrocaStatus.justificativa,
+                }
+                await pacthStatusRegistroOcorrencia(this.ocorrencia.uid, payload);
                 this.$notify({
                     title: 'Sucesso!',
                     message: 'Status atualizado com sucesso',
                     type: 'success',
                 });
+                this.getDados();
+                this.getHistoricoStatus();
             } catch (error) {
                 console.error(error);
                 this.$notify({
@@ -245,7 +368,50 @@ export default {
         },
         formatarData(data) {
             const dataObj = new Date(data);
-            return dataObj.toLocaleDateString();
+            return dataObj.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false, // Formato 24 horas
+            });
+        },
+        abrirModalTrocaStatus(ocorrencia) {
+            this.modalVisivel = true;
+            this.formTrocaStatus.statusAntigo = ocorrencia.statusExibicao;
+            this.formTrocaStatus.novoStatus = ''; // Inicie com o status atual
+        },
+        cancelarTrocaStatus() {
+            this.modalVisivel = false;
+            this.$refs.formTrocaStatus.resetFields();
+        },
+        async confirmarTrocaStatus() {
+            // Validação do formulário
+            this.$refs.formTrocaStatus.validate(async (valid) => {
+                if (valid) {
+                    await this.mudarStatus();
+                    this.modalVisivel = false;
+                }
+            });
+        },
+        async getHistoricoStatus() {
+            try {
+                this.loading = true;
+                const { uid } = this.$route.params;
+                const { data } = await getStatusRegistroOcorrencia(uid);
+                this.historicoStatus = data;
+            } catch (error) {
+                this.$notify({
+                    title: 'Falha ao acessar o histórico de status',
+                    message: 'Não foi possível vizualizar os detalhes do histórico do status',
+                    type: 'error',
+                });
+                console.error(error);
+            } finally {
+                this.loading = false;
+            }
         },
     },
 };

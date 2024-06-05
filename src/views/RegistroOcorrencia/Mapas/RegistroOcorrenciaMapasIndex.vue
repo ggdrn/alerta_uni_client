@@ -25,12 +25,16 @@
                             value="aberta"
                         />
                         <el-option
-                            label="Processando"
-                            value="processando"
+                            label="Pendente"
+                            value="pendente"
                         />
                         <el-option
-                            label="Denúncia não confirmada"
-                            value="Denúncia não confirmada"
+                            label="Denúncia em Apuração"
+                            value="apuracao"
+                        />
+                        <el-option
+                            label="Encerrada"
+                            value="encerrada"
                         />
                     </el-select>
                 </el-form-item>
