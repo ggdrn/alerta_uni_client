@@ -4,8 +4,8 @@
         <el-card class="filter-card">
             <el-form
                 ref="filterForm"
+                class="flex gap-1 items-center"
                 :model="filterForm"
-                inline
                 :disabled="loading"
             >
                 <el-form-item label="Protocolo">
@@ -51,6 +51,7 @@
                     />
                 </el-form-item>
                 <el-button
+                    style="margin-top: 15px;"
                     :loading="loading"
                     type="success"
                     @click="getDados"
