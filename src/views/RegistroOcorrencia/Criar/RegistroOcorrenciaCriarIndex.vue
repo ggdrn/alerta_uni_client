@@ -139,10 +139,12 @@
                             </div>
                             <div>
                                 <el-form-item
+                                    for="telefone"
                                     label="Telefone"
                                     prop="telefone"
                                 >
                                     <el-input
+                                        id="telefoe"
                                         v-model="formVitima.telefone"
                                         v-mask="['(##) ####-####', '(##) #####-####']"
                                         type="text"
@@ -485,7 +487,7 @@ export default {
             instrumento_portado: "",
             formPessoaRules: {
                 nome: [requerido],
-                rg: [requerido, validateCPF],
+                rg: [ { validator: validateCPF, trigger: 'blur' }, requerido ],
                 endereco: [requerido],
                 genero: [requerido],
             },
@@ -495,7 +497,7 @@ export default {
                     { type: "email", message: "E-mail inválido", trigger: "blur" },
                 ],
                 data_nascimento: [requerido],
-                telefone: [requerido, validatePhone],
+                telefone: [requerido,  { validator: validatePhone, trigger: 'blur' }],
             },
             formOcorrenciaRules: {
                 descricao: [requerido],

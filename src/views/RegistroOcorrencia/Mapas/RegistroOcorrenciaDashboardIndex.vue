@@ -131,6 +131,15 @@
                 Carregando Mapas
             </div>
             <div v-else>
+                <el-pagination
+                    class="mt-4 mb-4"
+                    :current-page.sync="pagination.page"
+                    :page-size.sync="pagination.perPage"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="pagination.totalRegistros"
+                    @size-change="getDados"
+                    @current-change="getDados"
+                />
                 <!-- Div que conterá o mapa -->
                 <l-map
                     style="height: 500px"
@@ -152,15 +161,6 @@
                 </l-map>
             </div>
         </el-card>
-        <el-pagination
-            class="mt-4 mb-4"
-            :current-page.sync="pagination.page"
-            :page-size.sync="pagination.perPage"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.totalRegistros"
-            @size-change="getDados"
-            @current-change="getDados"
-        />
     </div>
 </template>
 
